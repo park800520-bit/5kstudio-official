@@ -167,3 +167,5 @@ footer .info a:hover{color:var(--accent)}
 @media (max-width:760px){footer .info{grid-template-columns:1fr 1fr}}
 footer .bar{display:flex;justify-content:space-between;margin-top:50px;color:var(--grey)}
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero video{transition:none}}
+
+x-t{display:contents}

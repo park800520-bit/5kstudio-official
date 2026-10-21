@@ -33,7 +33,10 @@
   fl.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;fl.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
     grid.querySelectorAll(".c").forEach(c=>c.classList.toggle("hide",b.dataset.k!=="all"&&c.dataset.cat!==b.dataset.k))});
   grid.querySelectorAll(".c").forEach(el=>{const v=el.querySelector("video");if(!v)return;
-    el._p=()=>{if(reduce)return;if(!v.src)v.src=v.dataset.src;v.play().then(()=>el.classList.add("playing")).catch(()=>{})};el._s=()=>{v.pause();el.classList.remove("playing")};
+    el._p=()=>{if(reduce||!v.dataset.src)return;if(!v.src)v.src=v.dataset.src;v.play().then(()=>el.classList.add("playing")).catch(()=>{})};el._s=()=>{v.pause();el.classList.remove("playing")};
     el.addEventListener("mouseenter",el._p);el.addEventListener("mouseleave",el._s)});
   if(touch){const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?e.target._p&&e.target._p():e.target._s&&e.target._s()),{threshold:.6});grid.querySelectorAll(".c").forEach(c=>io.observe(c))}
+  // edit mode: open the site with ?edit (or #edit)
+  if(/[?&#]edit\b/.test(location.href)){const s=document.createElement("script");s.src="edit.js?"+Date.now();document.body.appendChild(s)}
+  window.__hero={get cur(){return cur},show,vids};
 })();

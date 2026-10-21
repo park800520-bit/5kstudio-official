@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://cdn.jsdelivr.net">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
 <link rel="stylesheet" href="style.css">
+<meta name="k-repo" content="<!--REPO-->">
 </head>
 <body>
 <header class="g" id="hdr">
@@ -54,7 +55,7 @@
 
 <section class="drop g">
   <div class="t"><h2><span class="thin">{{featured.title_light}}</span><br>{{featured.title_bold}}</h2><p>{{featured.desc}}</p></div>
-  <div class="m"><div class="v"><video src="{{featured.video}}" poster="{{featured.poster}}" muted loop playsinline autoplay preload="metadata"></video></div><p class="mono">{{featured.caption}}</p></div>
+  <div class="m"><div class="v"><video src="{{featured.video}}" poster="{{featured.poster}}" data-mv="featured.video" data-mp="featured.poster" muted loop playsinline autoplay preload="metadata"></video></div><p class="mono">{{featured.caption}}</p></div>
 </section>
 
 <section class="cases g" id="cases">
@@ -67,7 +68,7 @@
 </section>
 
 <section class="core dark" id="vision">
-  <div class="bg"><img src="{{vision.image}}" alt="" loading="lazy"><h2>{{vision.heading}}</h2></div>
+  <div class="bg"><img src="{{vision.image}}" alt="" loading="lazy" data-mi="vision.image"><h2>{{vision.heading}}</h2></div>
   <div class="g">
     <p class="lede">{{vision.lede}}</p>
     <div class="cols3"><!--VISION_POINTS--></div>
