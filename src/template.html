@@ -17,7 +17,7 @@
 </head>
 <body>
 <header class="g" id="hdr">
-  <div class="left"><a class="logo" href="#top">5K<i></i></a><a class="btn deck" href="#contact"><span class="ic"></span>{{footer.deck_button}}</a></div>
+  <div class="left"><a class="logo" href="#top">{{nav.logo}}</a><a class="btn deck" href="#contact"><span class="ic"></span>{{footer.deck_button}}</a></div>
   <nav aria-label="주요 메뉴"><!--NAV--></nav>
 </header>
 
@@ -44,7 +44,7 @@
 <section class="what g" id="what" data-sec="what">
   <div class="what-head"><h2><span class="o">{{what.title_light}}</span><br>{{what.title_bold}}</h2><p>{{what.intro}}</p></div>
   <div class="cols"><!--WHAT_COLUMNS--></div>
-  <div class="dots" id="dots" aria-hidden="true"></div>
+  <div class="dots" id="dots"><p class="hint mono">{{what.game_hint}}</p><span class="score mono" id="score" aria-live="polite"></span></div>
 </section>
 
 <section class="appr g" id="approach" data-sec="approach">
@@ -96,6 +96,7 @@
   </div>
   <div class="bar mono"><span>{{hero.wordmark}}</span><span>© <!--YEAR--></span><span>{{footer.tagline}}</span></div>
 </footer>
+<script type="application/json" id="k-off"><!--OFFSETS--></script>
 <script src="site.js" defer></script>
 </body>
 </html>

@@ -37,6 +37,7 @@ const blocks = {
     const k = it.length; if (k <= 3) return it.map(a => `<div>${a}</div>`).join("");
     return `<div>${it.slice(0, k - 2).join("")}</div><div>${it[k - 2]}</div><div>${it[k - 1]}</div>`; })(),
   REPO: esc(REPO),
+  OFFSETS: JSON.stringify((C.layout && C.layout.offsets) || {}).replace(/</g, "\\u003c"),
 };
 
 let html = fs.readFileSync(path.join(root, "src/template.html"), "utf8");

@@ -71,7 +71,14 @@ header nav a:hover{opacity:.6}
 .cols li b{font-weight:700;color:var(--accent)}
 @media (max-width:860px){.cols{grid-template-columns:1fr 1fr}}
 .dots{position:relative;height:clamp(160px,18vw,260px);margin-top:50px}
-.dots i{position:absolute;width:7px;height:7px;border-radius:50%;background:#000;transition:transform 1.2s cubic-bezier(.2,.7,.1,1)}
+.dots i{position:absolute;left:0;top:0;width:7px;height:7px;border-radius:50%;background:#000;cursor:pointer;z-index:2;will-change:transform}
+.dots i::after{content:"";position:absolute;inset:-11px;border-radius:50%}
+.dots i:hover{background:#ff5000}
+.dots i.pop{visibility:hidden}
+.dots .fx{position:absolute;left:-90px;top:-90px;pointer-events:none;z-index:3}
+.dots .hint{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);margin:0;font-size:13px;color:#8a8a8a;letter-spacing:.02em;text-align:center;pointer-events:none;transition:opacity .6s;white-space:nowrap;z-index:1}
+.dots .hint.dim{opacity:.55}
+.dots .score{position:absolute;right:0;bottom:-6px;font-size:12px;color:#8a8a8a;pointer-events:none}
 
 /* approach */
 .appr{padding-bottom:clamp(90px,10vw,150px)}
@@ -170,3 +177,4 @@ footer .bar{display:flex;justify-content:space-between;margin-top:50px;color:var
 
 x-t{display:contents}
 section[hidden]{display:none!important}
+.what{overflow-x:clip}

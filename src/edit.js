@@ -41,6 +41,12 @@
   .k-bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;background:#111;color:#fff;padding:10px 12px;border-radius:999px;box-shadow:0 10px 40px rgba(0,0,0,.35);font:500 13px/1.2 "Pretendard Variable",Pretendard,sans-serif;max-width:calc(100% - 24px)}
   .k-bar .k-btn{background:#2a2a2a}.k-bar .k-btn.o{background:#ff5000}
   .k-msg{padding:0 6px;color:#bbb}
+  .k-move{user-select:none;-webkit-user-select:none}
+  .k-move x-t[data-k]{outline:none!important}
+  .k-move .k-hov{outline:2px dashed #2962ff;outline-offset:4px;cursor:move}
+  .k-move .k-drag{outline:2px solid #2962ff;cursor:grabbing}
+  .k-move #grid article.c{cursor:grab}
+  .k-edit .dots .hint{pointer-events:auto}
   .k-ov{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
   .k-md{background:#fff;color:#111;border-radius:16px;padding:24px;width:min(560px,100%);max-height:calc(100vh - 32px);overflow:auto;font:15px/1.5 "Pretendard Variable",Pretendard,sans-serif}
   .k-md h3{margin:0 0 6px;font-size:20px}.k-md p{margin:0 0 14px;color:#555;font-size:14px}
@@ -86,7 +92,7 @@
     document.body.classList.add("k-edit");
     document.querySelectorAll("x-t[data-k]").forEach(editable);
     document.addEventListener("click", e => { if (e.target.closest("x-t[contenteditable]")) e.preventDefault() }, true);
-    mediaBars(); caseBars(); bar();
+    mediaBars(); caseBars(); bar(); moveSetup();
     addEventListener("beforeunload", e => { if (count()) { e.preventDefault(); e.returnValue = "" } });
   }
   function editable(x) {
@@ -280,6 +286,43 @@
     });
   }
 
+  /* ---------- 위치 이동 (마우스) ---------- */
+  let moveOn = false, moveBtn, drag = null, hov = null, dragArt = null;
+  const keyOf = x => { const k = x.dataset.k, all = [...document.querySelectorAll(`x-t[data-k="${k}"]`)], n = all.indexOf(x); return n > 0 ? `${k}@${n}` : k };
+  const offs = () => ({ ...(val("layout.offsets") || {}) });
+  function setOff(key, o) { const all = offs(); o ? all[key] = o : delete all[key]; sets.set("layout.offsets", all); window.__koff = all; refresh() }
+  function toggleMove() {
+    moveOn = !moveOn; document.body.classList.toggle("k-move", moveOn);
+    moveBtn.textContent = moveOn ? "위치 이동 끝내기" : "위치 이동"; moveBtn.classList.toggle("o", moveOn);
+    document.querySelectorAll("x-t[data-k]").forEach(x => { if (!x.closest(".now")) moveOn ? x.removeAttribute("contenteditable") : x.setAttribute("contenteditable", "plaintext-only") });
+    document.querySelectorAll("#grid article.c").forEach(a => a.draggable = moveOn);
+    if (hov) hov.classList.remove("k-hov");
+    toast(!moveOn ? "글자를 클릭해서 고치세요" : innerWidth < 900 ? "위치 이동은 PC 화면(가로 900px 이상)에서만 적용돼요" : "글자 덩어리를 끌어서 옮기세요 · 더블클릭하면 제자리 · 작품은 끌어서 순서 변경");
+  }
+  function movable(t) {
+    if (!moveOn || !t.closest || t.closest(".k-bar,.k-ov,.k-tb,header,#grid,.now")) return null;
+    let x = t.closest("x-t[data-k]");
+    if (!x && t.querySelector) { const y = t.querySelector("x-t[data-k]"); if (y && window.__kblock(y) === t) x = y }
+    if (!x) return null;
+    const b = window.__kblock(x), first = b.querySelector("x-t[data-k]") || x;
+    return { b, key: keyOf(first) };
+  }
+  function moveSetup() {
+    document.addEventListener("click", e => { if (moveOn && !e.target.closest(".k-bar,.k-ov,.k-tb")) e.preventDefault() }, true);
+    document.addEventListener("pointerover", e => { if (!moveOn || drag) return; const m = movable(e.target); if (hov) hov.classList.remove("k-hov"); hov = m && m.b; if (hov) hov.classList.add("k-hov") });
+    document.addEventListener("pointerdown", e => { const m = movable(e.target); if (!m || e.button) return; e.preventDefault();
+      const o = offs()[m.key] || { x: 0, y: 0 }; drag = { ...m, sx: e.clientX, sy: e.clientY, ox: o.x, oy: o.y }; m.b.classList.add("k-drag") }, true);
+    addEventListener("pointermove", e => { if (!drag) return; const vw = 100 / innerWidth;
+      drag.nx = +(drag.ox + (e.clientX - drag.sx) * vw).toFixed(2); drag.ny = +(drag.oy + (e.clientY - drag.sy) * vw).toFixed(2);
+      drag.b.style.translate = `${drag.nx}vw ${drag.ny}vw` });
+    addEventListener("pointerup", () => { if (!drag) return; drag.b.classList.remove("k-drag"); if (drag.nx != null) setOff(drag.key, (drag.nx || drag.ny) ? { x: drag.nx, y: drag.ny } : null); drag = null });
+    document.addEventListener("dblclick", e => { const m = movable(e.target); if (!m) return; e.preventDefault(); m.b.style.translate = ""; setOff(m.key, null) }, true);
+    const grid = document.getElementById("grid");
+    grid.addEventListener("dragstart", e => { if (!moveOn) return; dragArt = e.target.closest("article.c"); if (!dragArt) return; e.dataTransfer.effectAllowed = "move"; dragArt.style.opacity = .4 });
+    grid.addEventListener("dragover", e => { if (!dragArt) return; e.preventDefault(); const t = e.target.closest("article.c"); if (!t || t === dragArt) return; const r = t.getBoundingClientRect(); e.clientX < r.left + r.width / 2 ? t.before(dragArt) : t.after(dragArt) });
+    grid.addEventListener("dragend", () => { if (!dragArt) return; dragArt.style.opacity = ""; dragArt = null; moved++; refresh() });
+  }
+
   /* ---------- 저장 ---------- */
   let saveBtn, msgEl;
   function bar() {
@@ -290,6 +333,7 @@
       $("button", { class: "k-btn", onclick: addCase }, "+ 작품 추가"),
       $("button", { class: "k-btn", onclick: navPanel }, "상단 메뉴"),
       $("button", { class: "k-btn", onclick: secPanel }, "섹션 순서"),
+      moveBtn = $("button", { class: "k-btn", onclick: toggleMove }, "위치 이동"),
       $("button", { class: "k-btn", onclick: infoPanel }, "기본 정보"),
       saveBtn, $("button", { class: "k-btn", onclick: exit }, "나가기")]));
     refresh();

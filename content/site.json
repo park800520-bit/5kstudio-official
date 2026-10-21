@@ -5,6 +5,7 @@
     "email": "contact@5k.studio"
   },
   "nav": {
+    "logo": "5K.STUDIO",
     "items": [
       {
         "label": "프로젝트",
@@ -62,7 +63,8 @@
         "id": "clients",
         "hidden": false
       }
-    ]
+    ],
+    "offsets": {}
   },
   "hero": {
     "wordmark": "5K.STUDIO",
@@ -106,6 +108,7 @@
     "title_light": "우리가",
     "title_bold": "하는 일",
     "intro": "광고가 필요한 모든 순간을 위해 — 전략에서 납품까지, 브랜드를 앞으로 움직이는 캠페인과 콘텐츠를 만듭니다.",
+    "game_hint": "잠시 놀다 가세요 · 점을 클릭해 보세요",
     "columns": [
       {
         "items": [
