@@ -169,3 +169,4 @@ footer .bar{display:flex;justify-content:space-between;margin-top:50px;color:var
 @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}.hero video{transition:none}}
 
 x-t{display:contents}
+section[hidden]{display:none!important}

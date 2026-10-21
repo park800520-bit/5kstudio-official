@@ -4,6 +4,66 @@
     "description": "전략에서 출발해 AI로 완성하는 엔드투엔드 광고·콘텐츠 프로덕션. 브리프에서 온에어까지 한 팀이 책임집니다.",
     "email": "contact@5k.studio"
   },
+  "nav": {
+    "items": [
+      {
+        "label": "프로젝트",
+        "target": "cases"
+      },
+      {
+        "label": "서비스",
+        "target": "what"
+      },
+      {
+        "label": "스튜디오",
+        "target": "vision"
+      },
+      {
+        "label": "문의",
+        "target": "contact"
+      }
+    ]
+  },
+  "layout": {
+    "sections": [
+      {
+        "id": "statement",
+        "hidden": false
+      },
+      {
+        "id": "what",
+        "hidden": false
+      },
+      {
+        "id": "approach",
+        "hidden": false
+      },
+      {
+        "id": "featured",
+        "hidden": false
+      },
+      {
+        "id": "cases",
+        "hidden": false
+      },
+      {
+        "id": "cta",
+        "hidden": false
+      },
+      {
+        "id": "vision",
+        "hidden": false
+      },
+      {
+        "id": "steps",
+        "hidden": false
+      },
+      {
+        "id": "clients",
+        "hidden": false
+      }
+    ]
+  },
   "hero": {
     "wordmark": "5K.STUDIO",
     "line1": "AI 네이티브 크리에이티브 프로덕션",
@@ -13,9 +73,24 @@
     "card_text": "5K가 어떻게 도울 수 있는지 — 회사소개서를 받아보세요",
     "card_button": "소개서 받기",
     "slides": [
-      { "client": "미래에셋증권", "title": "브랜드 메인 필름", "video": "media/h_mirae.mp4", "poster": "media/h_mirae.jpg" },
-      { "client": "신한투자증권", "title": "브랜딩 필름", "video": "media/h_shinhan.mp4", "poster": "media/h_shinhan.jpg" },
-      { "client": "페스티벌플러스", "title": "옥외 대형 LED", "video": "media/h_festival.mp4", "poster": "media/h_festival.jpg" }
+      {
+        "client": "미래에셋증권",
+        "title": "브랜드 메인 필름",
+        "video": "media/h_mirae.mp4",
+        "poster": "media/h_mirae.jpg"
+      },
+      {
+        "client": "신한투자증권",
+        "title": "브랜딩 필름",
+        "video": "media/h_shinhan.mp4",
+        "poster": "media/h_shinhan.jpg"
+      },
+      {
+        "client": "페스티벌플러스",
+        "title": "옥외 대형 LED",
+        "video": "media/h_festival.mp4",
+        "poster": "media/h_festival.jpg"
+      }
     ]
   },
   "statement": {
@@ -23,25 +98,72 @@
     "body": "5K.STUDIO는 서울을 기반으로 한 AI 네이티브 광고·콘텐츠 프로덕션입니다. 20년 광고 대행사 크리에이티브 디렉팅 위에 AI 제작 파이프라인을 얹어, 브리프에서 매체별 딜리버러블까지 한 팀이 책임집니다.",
     "pillars": "전략. 인사이트.\n완성도. 납품."
   },
-  "cta": { "question": "브리프가 있나요?", "button": "시작" },
+  "cta": {
+    "question": "브리프가 있나요?",
+    "button": "시작"
+  },
   "what": {
     "title_light": "우리가",
     "title_bold": "하는 일",
     "intro": "광고가 필요한 모든 순간을 위해 — 전략에서 납품까지, 브랜드를 앞으로 움직이는 캠페인과 콘텐츠를 만듭니다.",
     "columns": [
-      { "items": ["브랜드 전략", "컨슈머 인사이트", "포지셔닝 · USP · RTB", "크리에이티브 브리프", "미디어 믹스 플래닝"] },
-      { "items": ["빅 아이디어", "카피라이팅", "스토리보드 · 콘티", "애니매틱 · 프리비즈", "캐릭터 · 룩 디자인"] },
-      { "items": ["AI 이미지 생성", "AI 영상 생성", "오리지널 음악 · 사운드", "보이스 · 내레이션", "실사 합성"] },
-      { "items": ["편집 · 컬러그레이딩", "모션그래픽", "매체별 규격 대응", "숏폼 컷다운", "AI 내재화 컨설팅"] }
+      {
+        "items": [
+          "브랜드 전략",
+          "컨슈머 인사이트",
+          "포지셔닝 · USP · RTB",
+          "크리에이티브 브리프",
+          "미디어 믹스 플래닝"
+        ]
+      },
+      {
+        "items": [
+          "빅 아이디어",
+          "카피라이팅",
+          "스토리보드 · 콘티",
+          "애니매틱 · 프리비즈",
+          "캐릭터 · 룩 디자인"
+        ]
+      },
+      {
+        "items": [
+          "AI 이미지 생성",
+          "AI 영상 생성",
+          "오리지널 음악 · 사운드",
+          "보이스 · 내레이션",
+          "실사 합성"
+        ]
+      },
+      {
+        "items": [
+          "편집 · 컬러그레이딩",
+          "모션그래픽",
+          "매체별 규격 대응",
+          "숏폼 컷다운",
+          "AI 내재화 컨설팅"
+        ]
+      }
     ]
   },
   "approach": {
     "label": "5K의 일하는 방식",
     "rows": [
-      { "title": "전략", "desc": "컨슈머 인사이트와 포지셔닝에서 출발합니다. 근거 없는 비주얼은 만들지 않습니다." },
-      { "title": "크리에이티브", "desc": "하나의 빅 아이디어를 카피, 콘티, 룩으로 구체화합니다." },
-      { "title": "AI 프로덕션", "desc": "촬영·세트·로케이션 없이 이미지, 영상, 음악, 보이스를 만듭니다." },
-      { "title": "딜리버리", "desc": "편집과 그레이딩을 거쳐, 매체별 규격과 숏폼 컷다운까지 납품합니다." }
+      {
+        "title": "전략",
+        "desc": "컨슈머 인사이트와 포지셔닝에서 출발합니다. 근거 없는 비주얼은 만들지 않습니다."
+      },
+      {
+        "title": "크리에이티브",
+        "desc": "하나의 빅 아이디어를 카피, 콘티, 룩으로 구체화합니다."
+      },
+      {
+        "title": "AI 프로덕션",
+        "desc": "촬영·세트·로케이션 없이 이미지, 영상, 음악, 보이스를 만듭니다."
+      },
+      {
+        "title": "딜리버리",
+        "desc": "편집과 그레이딩을 거쳐, 매체별 규격과 숏폼 컷다운까지 납품합니다."
+      }
     ]
   },
   "featured": {
@@ -55,21 +177,126 @@
   "cases": {
     "heading": "주요 작업",
     "items": [
-      { "client": "IBK기업은행", "title": "IRP 온에어 캠페인", "category": "캠페인", "vertical": false, "video": "media/ibk.mp4", "poster": "media/ibk.jpg" },
-      { "client": "셀트리온", "title": "화잘먹", "category": "숏폼", "vertical": true, "video": "media/celltrion.mp4", "poster": "media/celltrion.jpg" },
-      { "client": "미래에셋증권", "title": "브랜드 메인 필름", "category": "캠페인", "vertical": false, "video": "media/mirae.mp4", "poster": "media/mirae.jpg" },
-      { "client": "AI 콘텐츠 페스티벌", "title": "AI 필름", "category": "필름·뮤직비디오", "vertical": false, "video": "media/aifest.mp4", "poster": "media/aifest.jpg" },
-      { "client": "신한투자증권", "title": "브랜딩 필름", "category": "캠페인", "vertical": false, "video": "media/shinhan.mp4", "poster": "media/shinhan.jpg" },
-      { "client": "신한투자증권", "title": "쇼츠 '택시'", "category": "숏폼", "vertical": true, "video": "media/shinhan_s.mp4", "poster": "media/shinhan_s.jpg" },
-      { "client": "우리은행", "title": "우리WON뱅킹", "category": "캠페인", "vertical": false, "video": "media/woori.mp4", "poster": "media/woori.jpg" },
-      { "client": "haru", "title": "뮤직비디오", "category": "필름·뮤직비디오", "vertical": false, "video": "media/haru.mp4", "poster": "media/haru.jpg" },
-      { "client": "페스티벌플러스", "title": "옥외 대형 LED", "category": "옥외·미디어아트", "vertical": false, "video": "media/festival.mp4", "poster": "media/festival.jpg" },
-      { "client": "잡코리아·알바몬", "title": "통합 캠페인", "category": "캠페인", "vertical": false, "video": "media/jobkorea.mp4", "poster": "media/jobkorea.jpg" },
-      { "client": "셀트리온", "title": "지피덤", "category": "숏폼", "vertical": true, "video": "media/celltrion2.mp4", "poster": "media/celltrion2.jpg" },
-      { "client": "서울디지털대학교", "title": "브랜드 광고", "category": "캠페인", "vertical": false, "video": "media/sdu.mp4", "poster": "media/sdu.jpg" },
-      { "client": "오리지널", "title": "feel", "category": "필름·뮤직비디오", "vertical": false, "video": "media/feel.mp4", "poster": "media/feel.jpg" },
-      { "client": "오리지널", "title": "my dear", "category": "필름·뮤직비디오", "vertical": false, "video": "media/mydear.mp4", "poster": "media/mydear.jpg" },
-      { "client": "국립서울현충원", "title": "미디어아트 당선작", "category": "옥외·미디어아트", "vertical": false, "video": "media/memorial.mp4", "poster": "media/memorial.jpg" }
+      {
+        "client": "IBK기업은행",
+        "title": "IRP 온에어 캠페인",
+        "category": "캠페인",
+        "vertical": false,
+        "video": "media/ibk.mp4",
+        "poster": "media/ibk.jpg"
+      },
+      {
+        "client": "셀트리온",
+        "title": "화잘먹",
+        "category": "숏폼",
+        "vertical": true,
+        "video": "media/celltrion.mp4",
+        "poster": "media/celltrion.jpg"
+      },
+      {
+        "client": "미래에셋증권",
+        "title": "브랜드 메인 필름",
+        "category": "캠페인",
+        "vertical": false,
+        "video": "media/mirae.mp4",
+        "poster": "media/mirae.jpg"
+      },
+      {
+        "client": "AI 콘텐츠 페스티벌",
+        "title": "AI 필름",
+        "category": "필름·뮤직비디오",
+        "vertical": false,
+        "video": "media/aifest.mp4",
+        "poster": "media/aifest.jpg"
+      },
+      {
+        "client": "신한투자증권",
+        "title": "브랜딩 필름",
+        "category": "캠페인",
+        "vertical": false,
+        "video": "media/shinhan.mp4",
+        "poster": "media/shinhan.jpg"
+      },
+      {
+        "client": "신한투자증권",
+        "title": "쇼츠 '택시'",
+        "category": "숏폼",
+        "vertical": true,
+        "video": "media/shinhan_s.mp4",
+        "poster": "media/shinhan_s.jpg"
+      },
+      {
+        "client": "우리은행",
+        "title": "우리WON뱅킹",
+        "category": "캠페인",
+        "vertical": false,
+        "video": "media/woori.mp4",
+        "poster": "media/woori.jpg"
+      },
+      {
+        "client": "haru",
+        "title": "뮤직비디오",
+        "category": "필름·뮤직비디오",
+        "vertical": false,
+        "video": "media/haru.mp4",
+        "poster": "media/haru.jpg"
+      },
+      {
+        "client": "페스티벌플러스",
+        "title": "옥외 대형 LED",
+        "category": "옥외·미디어아트",
+        "vertical": false,
+        "video": "media/festival.mp4",
+        "poster": "media/festival.jpg"
+      },
+      {
+        "client": "잡코리아·알바몬",
+        "title": "통합 캠페인",
+        "category": "캠페인",
+        "vertical": false,
+        "video": "media/jobkorea.mp4",
+        "poster": "media/jobkorea.jpg"
+      },
+      {
+        "client": "셀트리온",
+        "title": "지피덤",
+        "category": "숏폼",
+        "vertical": true,
+        "video": "media/celltrion2.mp4",
+        "poster": "media/celltrion2.jpg"
+      },
+      {
+        "client": "서울디지털대학교",
+        "title": "브랜드 광고",
+        "category": "캠페인",
+        "vertical": false,
+        "video": "media/sdu.mp4",
+        "poster": "media/sdu.jpg"
+      },
+      {
+        "client": "오리지널",
+        "title": "feel",
+        "category": "필름·뮤직비디오",
+        "vertical": false,
+        "video": "media/feel.mp4",
+        "poster": "media/feel.jpg"
+      },
+      {
+        "client": "오리지널",
+        "title": "my dear",
+        "category": "필름·뮤직비디오",
+        "vertical": false,
+        "video": "media/mydear.mp4",
+        "poster": "media/mydear.jpg"
+      },
+      {
+        "client": "국립서울현충원",
+        "title": "미디어아트 당선작",
+        "category": "옥외·미디어아트",
+        "vertical": false,
+        "video": "media/memorial.mp4",
+        "poster": "media/memorial.jpg"
+      }
     ]
   },
   "vision": {
@@ -77,9 +304,18 @@
     "image": "media/h_shinhan.jpg",
     "lede": "광고를 아는 디렉터가, AI로 만듭니다. 우리는 툴이 아니라 관점으로 일합니다.",
     "points": [
-      { "title": "전략이 이끄는 크리에이티브.", "body": "모든 프로젝트는 컨슈머 인사이트와 브랜드 포지셔닝에서 시작합니다. AI는 수단이고, 방향은 전략이 정합니다." },
-      { "title": "시장 타이밍.", "body": "촬영과 세팅 공정을 줄여 리드타임을 단축합니다. 이슈와 시즌에 맞춰, 아이디어가 식기 전에 온에어합니다." },
-      { "title": "확장성과 일관성.", "body": "하나의 빅 아이디어를 매체·타깃·포맷별 베리에이션으로 확장하고, 캐릭터와 톤앤매너를 캠페인 전체에서 지킵니다." }
+      {
+        "title": "전략이 이끄는 크리에이티브.",
+        "body": "모든 프로젝트는 컨슈머 인사이트와 브랜드 포지셔닝에서 시작합니다. AI는 수단이고, 방향은 전략이 정합니다."
+      },
+      {
+        "title": "시장 타이밍.",
+        "body": "촬영과 세팅 공정을 줄여 리드타임을 단축합니다. 이슈와 시즌에 맞춰, 아이디어가 식기 전에 온에어합니다."
+      },
+      {
+        "title": "확장성과 일관성.",
+        "body": "하나의 빅 아이디어를 매체·타깃·포맷별 베리에이션으로 확장하고, 캐릭터와 톤앤매너를 캠페인 전체에서 지킵니다."
+      }
     ],
     "closing": "관습에 도전하고, 광고의 다음을 함께 만듭니다."
   },
@@ -89,28 +325,98 @@
     "title_3": "9단계",
     "intro": "세 개의 페이즈, 아홉 단계. 단계마다 무엇을 하고 어떤 산출물을 넘기는지 시작 전에 약속합니다.",
     "items": [
-      { "phase": "전략", "name": "디스커버리", "desc": "브리프 분석, 시장·경쟁사 분석, 타깃 페르소나 정의", "output": "리서치 리포트" },
-      { "phase": "전략", "name": "인사이트·포지셔닝", "desc": "컨슈머 인사이트 도출, USP·RTB 정리, 키 메시지", "output": "커뮤니케이션 전략" },
-      { "phase": "전략", "name": "크리에이티브 전략", "desc": "빅 아이디어, 톤앤매너, 미디어 믹스·채널 전략", "output": "크리에이티브 브리프" },
-      { "phase": "크리에이티브", "name": "컨셉·카피", "desc": "크리에이티브 컨셉 시안, 헤드라인·슬로건", "output": "컨셉 보드" },
-      { "phase": "크리에이티브", "name": "프리비주얼라이제이션", "desc": "스토리보드, 애니매틱, 룩앤필·캐릭터 설계", "output": "프리비즈 패키지" },
-      { "phase": "크리에이티브", "name": "AI 프로덕션", "desc": "이미지·영상 생성, 오리지널 음원·보이스, QC", "output": "제작 원본" },
-      { "phase": "딜리버리", "name": "포스트 프로덕션", "desc": "편집, 컬러그레이딩, 사운드 믹싱, 모션그래픽", "output": "마스터 파일" },
-      { "phase": "딜리버리", "name": "마스터링·딜리버리", "desc": "매체별 규격, 롱폼·숏폼 컷다운, 베리에이션", "output": "매체별 딜리버러블" },
-      { "phase": "딜리버리", "name": "옵티마이즈", "desc": "집행 성과 리뷰, A/B 소재 테스트, 피드백", "output": "크리에이티브 리포트" }
+      {
+        "phase": "전략",
+        "name": "디스커버리",
+        "desc": "브리프 분석, 시장·경쟁사 분석, 타깃 페르소나 정의",
+        "output": "리서치 리포트"
+      },
+      {
+        "phase": "전략",
+        "name": "인사이트·포지셔닝",
+        "desc": "컨슈머 인사이트 도출, USP·RTB 정리, 키 메시지",
+        "output": "커뮤니케이션 전략"
+      },
+      {
+        "phase": "전략",
+        "name": "크리에이티브 전략",
+        "desc": "빅 아이디어, 톤앤매너, 미디어 믹스·채널 전략",
+        "output": "크리에이티브 브리프"
+      },
+      {
+        "phase": "크리에이티브",
+        "name": "컨셉·카피",
+        "desc": "크리에이티브 컨셉 시안, 헤드라인·슬로건",
+        "output": "컨셉 보드"
+      },
+      {
+        "phase": "크리에이티브",
+        "name": "프리비주얼라이제이션",
+        "desc": "스토리보드, 애니매틱, 룩앤필·캐릭터 설계",
+        "output": "프리비즈 패키지"
+      },
+      {
+        "phase": "크리에이티브",
+        "name": "AI 프로덕션",
+        "desc": "이미지·영상 생성, 오리지널 음원·보이스, QC",
+        "output": "제작 원본"
+      },
+      {
+        "phase": "딜리버리",
+        "name": "포스트 프로덕션",
+        "desc": "편집, 컬러그레이딩, 사운드 믹싱, 모션그래픽",
+        "output": "마스터 파일"
+      },
+      {
+        "phase": "딜리버리",
+        "name": "마스터링·딜리버리",
+        "desc": "매체별 규격, 롱폼·숏폼 컷다운, 베리에이션",
+        "output": "매체별 딜리버러블"
+      },
+      {
+        "phase": "딜리버리",
+        "name": "옵티마이즈",
+        "desc": "집행 성과 리뷰, A/B 소재 테스트, 피드백",
+        "output": "크리에이티브 리포트"
+      }
     ]
   },
   "clients": {
     "heading": "클라이언트",
     "sub": "브랜드",
     "categories": [
-      { "name": "금융", "count": "4" },
-      { "name": "헬스케어", "count": "1" },
-      { "name": "플랫폼", "count": "1" },
-      { "name": "교육", "count": "1" },
-      { "name": "공공·문화", "count": "2" }
+      {
+        "name": "금융",
+        "count": "4"
+      },
+      {
+        "name": "헬스케어",
+        "count": "1"
+      },
+      {
+        "name": "플랫폼",
+        "count": "1"
+      },
+      {
+        "name": "교육",
+        "count": "1"
+      },
+      {
+        "name": "공공·문화",
+        "count": "2"
+      }
     ],
-    "names": ["IBK기업은행", "미래에셋증권", "신한투자증권", "우리은행", "셀트리온", "잡코리아·알바몬", "서울디지털대학교", "국립서울현충원", "페스티벌플러스"]
+    "names": [
+      "IBK기업은행",
+      "미래에셋증권",
+      "신한투자증권",
+      "우리은행",
+      "셀트리온",
+      "잡코리아·알바몬",
+      "서울디지털대학교",
+      "국립서울현충원",
+      "페스티벌플러스"
+    ]
   },
   "footer": {
     "address": "서울,\n대한민국",

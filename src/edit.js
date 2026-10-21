@@ -10,6 +10,8 @@
 
   let tok = store.get(TOK_KEY), J = null;
   const sets = new Map(), del = new Set(), adds = [], media = new Map();
+  let moved = 0;
+  const SEC = { top: "맨 위(메인 영상)", statement: "소개 문장", what: "우리가 하는 일", approach: "일하는 방식", featured: "대표 작품", cases: "주요 작업", cta: "문의 유도 문구", vision: "핵심 가치", steps: "9단계 프로세스", clients: "클라이언트", contact: "문의(맨 아래)" };
 
   /* ---------- helpers ---------- */
   const $ = (t, a = {}, kids = []) => { const e = document.createElement(t); for (const k in a) k === "style" ? e.style.cssText = a[k] : k.startsWith("on") ? e.addEventListener(k.slice(2), a[k]) : e.setAttribute(k, a[k]); [].concat(kids).forEach(c => e.append(c)); return e };
@@ -25,7 +27,7 @@
   const b64dec = s => new TextDecoder().decode(Uint8Array.from(atob(s.replace(/\n/g, "")), c => c.charCodeAt(0)));
   const readB64 = f => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(",")[1]); r.onerror = no; r.readAsDataURL(f) });
   const pick = accept => new Promise(ok => { const i = $("input", { type: "file", accept }); i.onchange = () => ok(i.files[0] || null); i.click() });
-  const count = () => sets.size + del.size + adds.length;
+  const count = () => sets.size + del.size + adds.length + moved;
 
   /* ---------- styles ---------- */
   document.head.append($("style", {}, `
@@ -50,7 +52,7 @@
   `));
 
   /* ---------- modal ---------- */
-  function modal(build) { const ov = $("div", { class: "k-ov" }), md = $("div", { class: "k-md" }); ov.append(md); const close = () => ov.remove(); ov.addEventListener("mousedown", e => { if (e.target === ov) close() }); build(md, close); document.body.append(ov); return close }
+  function modal(build, lock) { const ov = $("div", { class: "k-ov" }), md = $("div", { class: "k-md" }); ov.append(md); const close = () => ov.remove(); if (!lock) ov.addEventListener("mousedown", e => { if (e.target === ov) close() }); build(md, close); document.body.append(ov); return close }
 
   /* ---------- 1. 열쇠(토큰) ---------- */
   function login(err) {
@@ -82,7 +84,12 @@
   /* ---------- 2. 편집 켜기 ---------- */
   function enable() {
     document.body.classList.add("k-edit");
-    document.querySelectorAll("x-t[data-k]").forEach(x => {
+    document.querySelectorAll("x-t[data-k]").forEach(editable);
+    document.addEventListener("click", e => { if (e.target.closest("x-t[contenteditable]")) e.preventDefault() }, true);
+    mediaBars(); caseBars(); bar();
+    addEventListener("beforeunload", e => { if (count()) { e.preventDefault(); e.returnValue = "" } });
+  }
+  function editable(x) {
       if (x.closest(".now")) return;
       x.setAttribute("contenteditable", "plaintext-only"); x.spellcheck = false;
       x.addEventListener("input", () => {
@@ -92,11 +99,7 @@
         if (k === "hero.wordmark") dispatchEvent(new Event("resize"));
         refresh();
       });
-      x.addEventListener("keydown", e => { if (e.key === "Escape") x.blur() });
-    });
-    document.addEventListener("click", e => { if (e.target.closest("x-t[contenteditable]")) e.preventDefault() }, true);
-    mediaBars(); caseBars(); bar();
-    addEventListener("beforeunload", e => { if (count()) { e.preventDefault(); e.returnValue = "" } });
+      x.addEventListener("keydown", e => { if (e.key === "Escape") x.blur(); if (e.key === "Enter" && x.closest("header")) { e.preventDefault(); x.blur() } });
   }
 
   /* ---------- 미디어 ---------- */
@@ -156,8 +159,15 @@
       const sel = $("select", { title: "분류", onclick: e => e.stopPropagation(), onchange: () => { sets.set(`cases.items.${i}.category`, sel.value); art.dataset.cat = sel.value; refresh() } }, cats().map(c => $("option", { value: c }, c)));
       sel.value = val(`cases.items.${i}.category`);
       const vert = $("button", { class: "k-btn w", onclick: e => { e.stopPropagation(); const v = !val(`cases.items.${i}.vertical`); sets.set(`cases.items.${i}.vertical`, v); art.classList.toggle("vert", v); vert.textContent = v ? "세로형 ✓" : "가로형"; refresh() } }, val(`cases.items.${i}.vertical`) ? "세로형 ✓" : "가로형");
+      const mv = d => $("button", { class: "k-btn w", title: d < 0 ? "앞으로" : "뒤로", onclick: e => { e.stopPropagation(); moveCase(art, d) } }, d < 0 ? "◀" : "▶");
+      tb.prepend(mv(-1), mv(1));
       tb.append(sel, vert, $("button", { class: "k-btn", style: "background:#c62828", onclick: e => { e.stopPropagation(); del.add(+i); art.style.display = "none"; refresh(); toast("작품을 뺐어요. 저장하면 사이트에서 사라져요.") } }, "삭제"));
     });
+  }
+  function moveCase(art, d) {
+    const vis = [...document.querySelectorAll("#grid article.c")].filter(a => a.style.display !== "none");
+    const k = vis.indexOf(art), t = vis[k + d]; if (!t) return;
+    d < 0 ? t.before(art) : t.after(art); moved++; refresh(); art.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
   function addCase() {
     modal((md, close) => {
@@ -174,7 +184,7 @@
         if (!img) { const b = await posterFrom(vid.url); if (b) { posterPath = `media/u${Date.now().toString(36)}-poster.jpg`; media.set(posterPath, await readB64(b)); posterUrl = URL.createObjectURL(b) } }
         const item = { client: client.value.trim(), title: title.value.trim(), category: cat.value, vertical: vert.checked, video: vid.path, poster: posterPath || "" };
         adds.push(item);
-        const art = $("article", { class: "c" + (item.vertical ? " vert" : ""), "data-cat": item.category }, [
+        const art = $("article", { class: "c" + (item.vertical ? " vert" : ""), "data-cat": item.category, "data-new": adds.length - 1 }, [
           $("div", { class: "v" }, [$("img", { src: posterUrl || "", alt: "" }), $("video", { src: vid.url, muted: "", loop: "", playsinline: "", autoplay: "" })]),
           $("div", { class: "cap mono" }, [$("span", {}, item.client), $("span", {}, item.title)])]);
         art.querySelector("video").muted = true; art.classList.add("playing");
@@ -212,6 +222,55 @@
       md.append($("div", { class: "row2" }, [$("button", { class: "k-btn o", onclick: close }, "닫기")]));
     });
   }
+  /* 상단 메뉴 */
+  function navItems() { return (val("nav.items") || []).map((n, i) => ({ label: val(`nav.items.${i}.label`) ?? n.label, target: n.target })) }
+  function renderNav(items) {
+    const nav = document.querySelector("header nav"), a = items.map((n, i) => $("a", { href: "#" + n.target }, [$("x-t", { "data-k": `nav.items.${i}.label` }, n.label)]));
+    nav.innerHTML = ""; const k = a.length;
+    if (k <= 3) a.forEach(x => nav.append($("div", {}, x))); else nav.append($("div", {}, a.slice(0, k - 2)), $("div", {}, a[k - 2]), $("div", {}, a[k - 1]));
+    nav.querySelectorAll("x-t").forEach(editable);
+  }
+  function navPanel() {
+    let items = navItems();
+    const commit = () => { [...sets.keys()].forEach(k => k.startsWith("nav.items.") && sets.delete(k)); sets.set("nav.items", items.map(n => ({ ...n }))); renderNav(items); refresh() };
+    modal((md, close) => {
+      const list = $("div");
+      const draw = () => { list.innerHTML = ""; items.forEach((n, i) => {
+        const lab = $("input", { type: "text", value: n.label, style: "flex:1;min-width:110px" }); lab.value = n.label;
+        lab.addEventListener("input", () => { n.label = lab.value; commit() });
+        const tg = $("select", { style: "flex:1;min-width:140px" }, Object.keys(SEC).map(k => $("option", { value: k }, SEC[k]))); tg.value = n.target;
+        tg.addEventListener("change", () => { n.target = tg.value; commit() });
+        const b = (t, f, cls = "w") => $("button", { class: "k-btn " + cls, onclick: () => { f(); commit(); draw() } }, t);
+        list.append($("div", { class: "row2", style: "align-items:center;margin-top:10px" }, [lab, tg,
+          b("↑", () => i && items.splice(i - 1, 0, items.splice(i, 1)[0])), b("↓", () => i < items.length - 1 && items.splice(i + 1, 0, items.splice(i, 1)[0])),
+          b("삭제", () => items.splice(i, 1), "")]));
+      }) };
+      draw();
+      md.append($("h3", {}, "상단 메뉴"), $("p", {}, "메뉴 이름을 고치고, 누르면 이동할 섹션을 고르세요. 왼쪽부터 순서대로 보여요. (휴대폰에서는 가운데 칸 메뉴가 숨겨져요)"), list,
+        $("div", { class: "row2" }, [$("button", { class: "k-btn w", onclick: () => { items.push({ label: "새 메뉴", target: "top" }); commit(); draw() } }, "+ 메뉴 추가"), $("button", { class: "k-btn o", onclick: close }, "닫기")]));
+    });
+  }
+  /* 섹션 순서 */
+  function secPanel() {
+    let lay = (val("layout.sections") || []).map(x => ({ ...x }));
+    document.querySelectorAll("section[data-sec]").forEach(s => { if (!lay.some(x => x.id === s.dataset.sec)) lay.push({ id: s.dataset.sec, hidden: false }) });
+    const apply = () => { const foot = document.querySelector("footer");
+      lay.forEach(x => { const s = document.querySelector(`section[data-sec="${x.id}"]`); if (!s) return; foot.before(s); s.hidden = !!x.hidden });
+      sets.set("layout.sections", lay.map(x => ({ ...x }))); dispatchEvent(new Event("resize")); refresh() };
+    modal((md, close) => {
+      const list = $("div");
+      const draw = () => { list.innerHTML = ""; lay.forEach((x, i) => {
+        const cb = $("input", { type: "checkbox" }); cb.checked = !x.hidden; cb.onchange = () => { x.hidden = !cb.checked; apply() };
+        const b = (t, f) => $("button", { class: "k-btn w", onclick: () => { f(); apply(); draw() } }, t);
+        list.append($("div", { class: "row2", style: "align-items:center;margin-top:8px;border-bottom:1px solid #eee;padding-bottom:8px" }, [
+          $("b", { style: "flex:1;min-width:140px" }, `${i + 1}. ${SEC[x.id] || x.id}`), $("label", { style: "margin:0;font-weight:500" }, [cb, " 보이기"]),
+          b("↑", () => i && lay.splice(i - 1, 0, lay.splice(i, 1)[0])), b("↓", () => i < lay.length - 1 && lay.splice(i + 1, 0, lay.splice(i, 1)[0]))]));
+      }) };
+      draw();
+      md.append($("h3", {}, "섹션 순서"), $("p", {}, "메인 영상 아래 섹션들의 순서를 바꾸거나 숨길 수 있어요. 바로 화면에 적용돼요."), list,
+        $("div", { class: "row2" }, [$("button", { class: "k-btn o", onclick: close }, "닫기")]));
+    });
+  }
   function infoPanel() {
     modal((md, close) => {
       md.append($("h3", {}, "기본 정보"), $("p", {}, "검색·카카오톡 공유 미리보기에 나오는 정보와 문의 이메일이에요."));
@@ -229,6 +288,8 @@
     document.body.append($("div", { class: "k-bar" }, [$("b", { style: "padding:0 6px" }, "편집 모드"), msgEl,
       $("button", { class: "k-btn", onclick: heroPanel }, "메인 영상"),
       $("button", { class: "k-btn", onclick: addCase }, "+ 작품 추가"),
+      $("button", { class: "k-btn", onclick: navPanel }, "상단 메뉴"),
+      $("button", { class: "k-btn", onclick: secPanel }, "섹션 순서"),
       $("button", { class: "k-btn", onclick: infoPanel }, "기본 정보"),
       saveBtn, $("button", { class: "k-btn", onclick: exit }, "나가기")]));
     refresh();
@@ -244,8 +305,9 @@
       const head = (await gh("/git/ref/heads/main")).object.sha;
       const baseTree = (await gh("/git/commits/" + head)).tree.sha;
       const fresh = JSON.parse(b64dec((await gh("/contents/content/site.json?ref=" + head)).content));
-      sets.forEach((v, k) => { try { setP(fresh, k, v) } catch (e) {} });
-      if (del.size || adds.length) fresh.cases.items = adds.slice().reverse().concat(fresh.cases.items.filter((_, i) => !del.has(i)));
+      [...sets].sort((a, b) => a[0].split(".").length - b[0].split(".").length).forEach(([k, v]) => { try { setP(fresh, k, v) } catch (e) {} });
+      if (del.size || adds.length || moved) { const old = fresh.cases.items;
+        fresh.cases.items = [...document.querySelectorAll("#grid article.c")].map(a => a.dataset.new != null ? adds[+a.dataset.new] : (a.dataset.i != null && !del.has(+a.dataset.i) ? old[+a.dataset.i] : null)).filter(Boolean); }
       const tree = [];
       let n = 0;
       for (const [path, b64] of media) { toast(`영상·이미지 올리는 중… (${++n}/${media.size})`); const b = await gh("/git/blobs", { method: "POST", body: { content: b64, encoding: "base64" } }); tree.push({ path, mode: "100644", type: "blob", sha: b.sha }) }
@@ -254,19 +316,25 @@
       const t = await gh("/git/trees", { method: "POST", body: { base_tree: baseTree, tree } });
       const c = await gh("/git/commits", { method: "POST", body: { message: "홈페이지 편집 (편집 모드)", tree: t.sha, parents: [head] } });
       await gh("/git/refs/heads/main", { method: "PATCH", body: { sha: c.sha } });
-      J = fresh; sets.clear(); del.clear(); adds.length = 0; media.clear(); refresh();
-      toast("저장 완료! 사이트에 반영 중… (1~2분)"); watch(c.sha);
+      J = fresh; sets.clear(); del.clear(); adds.length = 0; media.clear(); moved = 0; refresh();
+      const wait = modal(md => md.append($("h3", {}, "저장 완료 ✓"), $("p", { id: "k-wait" }, "사이트에 반영하는 중이에요 (보통 1~2분). 끝나면 자동으로 새로고침돼서 바로 이어서 편집할 수 있어요.")), true);
+      watch(c.sha, wait);
     } catch (e) {
       saveBtn.disabled = false; toast("저장 실패: " + e.message.slice(0, 80));
       if (/^401/.test(e.message)) { store.set(TOK_KEY, null); login("열쇠가 만료됐거나 지워졌어요. 새 열쇠를 넣어 주세요.") }
     }
   }
-  async function watch(sha) {
+  async function watch(sha, wait) {
+    const reload = () => location.replace(location.pathname + "?edit&v=" + Date.now());
     for (let k = 0; k < 30; k++) {
       await new Promise(r => setTimeout(r, 8000));
       try { const r = (await gh("/actions/runs?head_sha=" + sha)).workflow_runs[0];
-        if (r && r.status === "completed") { toast(r.conclusion === "success" ? "반영 완료! 다른 사람에게도 이제 보여요." : "반영 중 문제가 생겼어요. 저장 내용은 남아 있어요."); return } } catch (e) {}
+        if (r && r.status === "completed") {
+          if (r.conclusion === "success") { setTimeout(reload, 4000); const w = document.getElementById("k-wait"); if (w) w.textContent = "반영 완료! 다른 사람에게도 이제 보여요. 곧 새로고침돼요…"; }
+          else { wait(); toast("반영 중 문제가 생겼어요. 저장 내용은 GitHub에 남아 있어요. Claude에게 알려 주세요.") }
+          return } } catch (e) {}
     }
+    reload();
   }
   function exit() { if (count() && !window.confirm("저장하지 않은 수정이 있어요. 그래도 나갈까요?")) return; sets.clear(); del.clear(); adds.length = 0; location.href = location.pathname }
 

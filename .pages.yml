@@ -16,6 +16,36 @@ content:
           - { name: title, label: 사이트 제목, type: string }
           - { name: description, label: 사이트 설명, type: text }
           - { name: email, label: 문의 이메일, type: string }
+      - name: nav
+        label: 상단 메뉴
+        type: object
+        fields:
+          - name: items
+            label: 메뉴 (왼쪽부터)
+            type: object
+            list: true
+            fields:
+              - { name: label, label: 메뉴 이름, type: string }
+              - name: target
+                label: 누르면 이동할 곳
+                type: select
+                options:
+                  values: [top, statement, what, approach, featured, cases, cta, vision, steps, clients, contact]
+      - name: layout
+        label: 섹션 순서·숨기기
+        type: object
+        fields:
+          - name: sections
+            label: 섹션 (위에서부터 순서)
+            type: object
+            list: true
+            fields:
+              - name: id
+                label: 섹션
+                type: select
+                options:
+                  values: [statement, what, approach, featured, cases, cta, vision, steps, clients]
+              - { name: hidden, label: 숨기기, type: boolean }
       - name: hero
         label: 메인 화면
         type: object

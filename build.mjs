@@ -33,10 +33,23 @@ const blocks = {
     for (let i = 0; i < 3; i++) out.push(`<ul class="mono">${n.slice(i * per, i * per + per).map((x, j) => `<li>${T(`clients.names.${i * per + j}`, x)}</li>`).join("")}</ul>`);
     return out.join(""); })(),
   YEAR: String(new Date().getFullYear()),
+  NAV: (() => { const it = ((C.nav && C.nav.items) || []).map((n, i) => `<a href="#${esc(n.target || "top")}">${T(`nav.items.${i}.label`, n.label)}</a>`);
+    const k = it.length; if (k <= 3) return it.map(a => `<div>${a}</div>`).join("");
+    return `<div>${it.slice(0, k - 2).join("")}</div><div>${it[k - 2]}</div><div>${it[k - 1]}</div>`; })(),
   REPO: esc(REPO),
 };
 
 let html = fs.readFileSync(path.join(root, "src/template.html"), "utf8");
+
+// sections: reorder / hide by content.layout.sections
+const SEC_RE = /<section[^>]*data-sec="(\w+)"[\s\S]*?<\/section>\n?/g;
+const chunks = {}, tplOrder = [];
+html = html.replace(SEC_RE, (m, id) => { chunks[id] = m; tplOrder.push(id); return tplOrder.length === 1 ? "<!--SECTIONS-->" : ""; });
+const lay = (C.layout && C.layout.sections) || [];
+const order = lay.map(x => x.id).filter(id => chunks[id]).concat(tplOrder.filter(id => !lay.some(x => x.id === id)));
+const hidden = new Set(lay.filter(x => x.hidden).map(x => x.id));
+const SECTIONS = order.map(id => hidden.has(id) ? chunks[id].replace(/^<section/, "<section hidden") : chunks[id]).join("\n");
+html = html.replace("<!--SECTIONS-->", SECTIONS);
 html = html.replace(/<!--([A-Z_]+)-->/g, (m, k) => (k in blocks ? blocks[k] : m));
 // placeholders in <body> text become editable <x-t>; those in tags/attributes or <head> stay plain
 const bodyAt = html.indexOf("<body");
