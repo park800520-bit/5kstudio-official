@@ -45,9 +45,8 @@
     box.addEventListener("pointermove",e=>{const r=box.getBoundingClientRect();mx=e.clientX-r.left;my=e.clientY-r.top});
     box.addEventListener("pointerleave",()=>{mx=my=-1e4});
     function frame(t){if(!run)return;const r=box.getBoundingClientRect(),bw=r.width,bh=r.height,tt=t/1000;
-      D.forEach(d=>{if(!d.alive)return;const dx=reduce?0:Math.sin(tt*d.sp+d.ph)*9,dy=reduce?0:Math.cos(tt*d.sp*.8+d.ph*1.3)*7;
-        const x=d.fx*bw+dx,y=d.fy*bh+dy,ex=x-mx,ey=y-my,dist=Math.hypot(ex,ey)||1,f=Math.max(0,1-dist/150)*55;
-        d.px+=((ex/dist)*f-d.px)*.12;d.py+=((ey/dist)*f-d.py)*.12;d.el.style.transform=`translate(${x+d.px}px,${y+d.py}px)`});
+      D.forEach(d=>{if(!d.alive)return;const dx=reduce?0:Math.sin(tt*d.sp*.6+d.ph)*6,dy=reduce?0:Math.cos(tt*d.sp*.5+d.ph*1.3)*5;
+        const x=d.fx*bw+dx,y=d.fy*bh+dy;d.el.style.transform=`translate(${x}px,${y}px)`});
       cx.clearRect(0,0,W,H);
       for(let i=P.length-1;i>=0;i--){const p=P[i];p.x+=p.vx;p.y+=p.vy;p.vy+=.07;p.vx*=.985;p.vy*=.985;p.l-=p.dl;
         if(p.l<=0){P.splice(i,1);continue}cx.globalAlpha=Math.max(0,p.l);cx.fillStyle=p.c;cx.beginPath();cx.arc(p.x,p.y,p.r*(.5+p.l*.5),0,6.283);cx.fill()}
