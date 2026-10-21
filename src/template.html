@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>{{meta.title}}</title>
+<meta name="description" content="{{meta.description}}">
+<meta property="og:title" content="{{meta.title}}">
+<meta property="og:description" content="{{meta.description}}">
+<meta property="og:type" content="website">
+<meta property="og:image" content="{{hero.slides.0.poster}}">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23000'/%3E%3Ctext x='32' y='42' font-family='Arial' font-weight='900' font-size='28' fill='%23fff' text-anchor='middle'%3E5K%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="g" id="hdr">
+  <div class="left"><a class="logo" href="#top">5K<i></i></a><a class="btn deck" href="#contact"><span class="ic"></span>{{footer.deck_button}}</a></div>
+  <nav aria-label="주요 메뉴"><div><a href="#cases">프로젝트</a><a href="#what">서비스</a></div><div><a href="#vision">스튜디오</a></div><div><a href="#contact">문의</a></div></nav>
+</header>
+
+<section class="hero" id="top" aria-label="쇼릴">
+  <!--HERO_VIDEOS-->
+  <h1 class="word" id="word"><span>{{hero.wordmark}}</span></h1>
+  <div class="sub mono"><span>{{hero.line1}}</span><span>{{hero.line2}}</span><span>{{hero.line3}}</span></div>
+  <div class="now">
+    <div class="bars" id="bars"></div>
+    <span class="mono" id="nowClient" data-label="{{hero.now_label}}">{{hero.now_label}} — {{hero.slides.0.client}}</span>
+    <strong id="nowTitle">{{hero.slides.0.title}}</strong>
+  </div>
+  <div class="card"><p class="mono">{{hero.card_text}}</p><a class="btn" href="#contact"><span class="ic"></span>{{hero.card_button}}</a></div>
+</section>
+
+<section class="state dark g">
+  <p class="big">{{statement.headline}}</p>
+  <p class="lead">{{statement.body}}</p>
+  <div class="badge" aria-hidden="true">5K</div>
+  <p class="mono pillars">{{statement.pillars}}</p>
+  <div class="got"><span class="h60">{{cta.question}}</span><span class="start"><span class="br">(</span><a href="#contact">{{cta.button}}</a><span class="br">)</span></span></div>
+</section>
+
+<section class="what g" id="what">
+  <div class="what-head"><h2><span class="o">{{what.title_light}}</span><br>{{what.title_bold}}</h2><p>{{what.intro}}</p></div>
+  <div class="cols"><!--WHAT_COLUMNS--></div>
+  <div class="dots" id="dots" aria-hidden="true"></div>
+</section>
+
+<section class="appr g">
+  <p class="mono">{{approach.label}}</p>
+  <!--APPROACH_ROWS-->
+  <div class="deckcta"><span class="th" aria-hidden="true"></span><p class="mono">{{hero.card_text}}</p><a class="btn" href="#contact">{{hero.card_button}}</a></div>
+</section>
+
+<section class="drop g">
+  <div class="t"><h2><span class="thin">{{featured.title_light}}</span><br>{{featured.title_bold}}</h2><p>{{featured.desc}}</p></div>
+  <div class="m"><div class="v"><video src="{{featured.video}}" poster="{{featured.poster}}" muted loop playsinline autoplay preload="metadata"></video></div><p class="mono">{{featured.caption}}</p></div>
+</section>
+
+<section class="cases g" id="cases">
+  <div class="cases-head"><h2 class="h60">{{cases.heading}}</h2><div class="filters" id="filters" role="group" aria-label="분류"><!--CASE_FILTERS--></div></div>
+  <div class="grid" id="grid"><!--CASE_ITEMS--></div>
+</section>
+
+<section class="state dark g" style="padding-block:clamp(90px,10vw,140px)">
+  <div class="got" style="margin-top:0"><span class="h60">{{cta.question}}</span><span class="start"><span class="br">(</span><a href="#contact">{{cta.button}}</a><span class="br">)</span></span></div>
+</section>
+
+<section class="core dark" id="vision">
+  <div class="bg"><img src="{{vision.image}}" alt="" loading="lazy"><h2>{{vision.heading}}</h2></div>
+  <div class="g">
+    <p class="lede">{{vision.lede}}</p>
+    <div class="cols3"><!--VISION_POINTS--></div>
+    <div class="closing"><p class="h60">{{vision.closing}}</p><a class="btn" href="mailto:{{meta.email}}"><span class="ic"></span>{{meta.email}}</a></div>
+  </div>
+</section>
+
+<section class="steps g">
+  <div class="steps-head"><h2>{{steps.title_1}}<br><span class="o">{{steps.title_2}}</span><br>{{steps.title_3}}</h2><p>{{steps.intro}}</p></div>
+  <div class="sgrid"><!--STEP_ITEMS--></div>
+</section>
+
+<section class="clients g">
+  <h2>{{clients.heading}}<em>{{clients.sub}}</em></h2>
+  <div class="cl"><div class="cats"><!--CLIENT_CATS--></div><!--CLIENT_COLS--></div>
+</section>
+
+<footer class="dark g" id="contact">
+  <span class="huge" id="huge">{{hero.wordmark}}</span>
+  <div class="info mono">
+    <div><span>주소</span>{{footer.address}}</div>
+    <div><span>이메일</span><a href="mailto:{{meta.email}}">{{meta.email}}</a></div>
+    <div><span>소셜</span>{{footer.social}}</div>
+    <div><span>회사소개서</span><a class="btn" href="mailto:{{meta.email}}?subject=5K.STUDIO%20%ED%9A%8C%EC%82%AC%EC%86%8C%EA%B0%9C%EC%84%9C%20%EC%9A%94%EC%B2%AD" style="margin-top:4px"><span class="ic"></span>{{footer.deck_button}}</a></div>
+  </div>
+  <div class="bar mono"><span>{{hero.wordmark}}</span><span>© <!--YEAR--></span><span>{{footer.tagline}}</span></div>
+</footer>
+<script src="site.js" defer></script>
+</body>
+</html>
