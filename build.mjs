@@ -41,6 +41,9 @@ const blocks = {
 };
 
 let html = fs.readFileSync(path.join(root, "src/template.html"), "utf8");
+// cache-busting version for css/js so browsers never mix old and new files
+const VER = (await import("node:crypto")).createHash("md5").update(["style.css", "site.js", "edit.js"].map(f => fs.readFileSync(path.join(root, "src", f))).join("")).digest("hex").slice(0, 8);
+html = html.replace('href="style.css"', `href="style.css?v=${VER}"`).replace('src="site.js"', `src="site.js?v=${VER}"`);
 
 // sections: reorder / hide by content.layout.sections
 const SEC_RE = /<section[^>]*data-sec="(\w+)"[\s\S]*?<\/section>\n?/g;

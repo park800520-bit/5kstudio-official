@@ -41,11 +41,10 @@
   .k-bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;background:#111;color:#fff;padding:10px 12px;border-radius:999px;box-shadow:0 10px 40px rgba(0,0,0,.35);font:500 13px/1.2 "Pretendard Variable",Pretendard,sans-serif;max-width:calc(100% - 24px)}
   .k-bar .k-btn{background:#2a2a2a}.k-bar .k-btn.o{background:#ff5000}
   .k-msg{padding:0 6px;color:#bbb}
-  .k-move{user-select:none;-webkit-user-select:none}
-  .k-move x-t[data-k]{outline:none!important}
-  .k-move .k-hov{outline:2px dashed #2962ff;outline-offset:4px;cursor:move}
-  .k-move .k-drag{outline:2px solid #2962ff;cursor:grabbing}
-  .k-move #grid article.c{cursor:grab}
+  .k-hl{position:fixed;z-index:9000;display:none;pointer-events:none;outline:1.5px dashed #2962ff;border-radius:4px}
+  .k-h{position:absolute;pointer-events:auto;width:26px;height:26px;border-radius:50%;background:#2962ff;color:#fff;display:flex;align-items:center;justify-content:center;font:700 14px/1 sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);user-select:none;touch-action:none}
+  .k-hm{left:-14px;top:-14px;cursor:move}.k-hs{right:-14px;bottom:-14px;cursor:nwse-resize}
+  .k-acting,.k-acting *{user-select:none!important;-webkit-user-select:none!important}
   .k-edit .dots .hint{pointer-events:auto}
   .k-ov{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
   .k-md{background:#fff;color:#111;border-radius:16px;padding:24px;width:min(560px,100%);max-height:calc(100vh - 32px);overflow:auto;font:15px/1.5 "Pretendard Variable",Pretendard,sans-serif}
@@ -92,7 +91,7 @@
     document.body.classList.add("k-edit");
     document.querySelectorAll("x-t[data-k]").forEach(editable);
     document.addEventListener("click", e => { if (e.target.closest("x-t[contenteditable]")) e.preventDefault() }, true);
-    mediaBars(); caseBars(); bar(); moveSetup();
+    mediaBars(); caseBars(); bar(); handles();
     addEventListener("beforeunload", e => { if (count()) { e.preventDefault(); e.returnValue = "" } });
   }
   function editable(x) {
@@ -286,60 +285,63 @@
     });
   }
 
-  /* ---------- 위치 이동 (마우스) ---------- */
-  let moveOn = false, moveBtn, drag = null, hov = null, dragArt = null;
+  /* ---------- 마우스로 위치·크기 (글자에 마우스를 올리면 손잡이가 나타남) ---------- */
+  let cur = null, act = null, dragArt = null, hl, hm, hs;
   const keyOf = x => { const k = x.dataset.k, all = [...document.querySelectorAll(`x-t[data-k="${k}"]`)], n = all.indexOf(x); return n > 0 ? `${k}@${n}` : k };
-  const offs = () => ({ ...(val("layout.offsets") || {}) });
-  function setOff(key, o) { const all = offs(); o ? all[key] = o : delete all[key]; sets.set("layout.offsets", all); window.__koff = all; refresh() }
-  function toggleMove() {
-    moveOn = !moveOn; document.body.classList.toggle("k-move", moveOn);
-    moveBtn.textContent = moveOn ? "위치 이동 끝내기" : "위치 이동"; moveBtn.classList.toggle("o", moveOn);
-    document.querySelectorAll("x-t[data-k]").forEach(x => { if (!x.closest(".now")) moveOn ? x.removeAttribute("contenteditable") : x.setAttribute("contenteditable", "plaintext-only") });
-    document.querySelectorAll("#grid article.c").forEach(a => a.draggable = moveOn);
-    if (hov) hov.classList.remove("k-hov");
-    toast(!moveOn ? "글자를 클릭해서 고치세요" : innerWidth < 900 ? "위치 이동은 PC 화면(가로 900px 이상)에서만 적용돼요" : "글자 덩어리를 끌어서 옮기세요 · 더블클릭하면 제자리 · 작품은 끌어서 순서 변경");
-  }
-  function movable(t) {
-    if (!moveOn || !t.closest || t.closest(".k-bar,.k-ov,.k-tb,header,#grid,.now")) return null;
+  const offs = () => JSON.parse(JSON.stringify(val("layout.offsets") || {}));
+  const fitted = b => !!(b.closest("#word") || b.id === "huge");
+  function setOff(key, o) { const all = offs(); if (o && (o.x || o.y || (o.s && o.s !== 1))) all[key] = o; else delete all[key]; sets.set("layout.offsets", all); window.__koff = all; refresh() }
+  function look(b, o) { b.style.translate = (o.x || o.y) ? `${o.x || 0}vw ${o.y || 0}vw` : ""; if (!fitted(b)) { b.style.fontSize = ""; if (o.s && o.s !== 1) b.style.fontSize = parseFloat(getComputedStyle(b).fontSize) * o.s + "px" } }
+  function target(t) {
+    if (!t || !t.closest || t.closest(".k-bar,.k-ov,.k-tb,.k-hl,header,#grid,.now")) return null;
     let x = t.closest("x-t[data-k]");
     if (!x && t.querySelector) { const y = t.querySelector("x-t[data-k]"); if (y && window.__kblock(y) === t) x = y }
     if (!x) return null;
-    const b = window.__kblock(x), first = b.querySelector("x-t[data-k]") || x;
-    return { b, key: keyOf(first) };
+    const b = window.__kblock(x); return { b, key: keyOf(b.querySelector("x-t[data-k]") || x) };
   }
-  function moveSetup() {
-    document.addEventListener("click", e => { if (moveOn && !e.target.closest(".k-bar,.k-ov,.k-tb")) e.preventDefault() }, true);
-    document.addEventListener("pointerover", e => { if (!moveOn || drag) return; const m = movable(e.target); if (hov) hov.classList.remove("k-hov"); hov = m && m.b; if (hov) hov.classList.add("k-hov") });
-    document.addEventListener("pointerdown", e => { const m = movable(e.target); if (!m || e.button) return; e.preventDefault();
-      const o = offs()[m.key] || { x: 0, y: 0 }; drag = { ...m, sx: e.clientX, sy: e.clientY, ox: o.x, oy: o.y }; m.b.classList.add("k-drag") }, true);
-    addEventListener("pointermove", e => { if (!drag) return; const vw = 100 / innerWidth;
-      drag.nx = +(drag.ox + (e.clientX - drag.sx) * vw).toFixed(2); drag.ny = +(drag.oy + (e.clientY - drag.sy) * vw).toFixed(2);
-      drag.b.style.translate = `${drag.nx}vw ${drag.ny}vw` });
-    addEventListener("pointerup", () => { if (!drag) return; drag.b.classList.remove("k-drag"); if (drag.nx != null) setOff(drag.key, (drag.nx || drag.ny) ? { x: drag.nx, y: drag.ny } : null); drag = null });
-    document.addEventListener("dblclick", e => { const m = movable(e.target); if (!m) return; e.preventDefault(); m.b.style.translate = ""; setOff(m.key, null) }, true);
+  function place() { if (!cur) { hl.style.display = "none"; return } const r = cur.b.getBoundingClientRect();
+    Object.assign(hl.style, { display: "block", left: r.left - 4 + "px", top: r.top - 4 + "px", width: r.width + 8 + "px", height: r.height + 8 + "px" }); hs.style.display = fitted(cur.b) ? "none" : "" }
+  function handles() {
+    hm = $("b", { class: "k-h k-hm", title: "끌어서 옮기기 · 더블클릭하면 제자리" }, "✥");
+    hs = $("b", { class: "k-h k-hs", title: "끌어서 크기 조절 · 더블클릭하면 원래 크기" }, "⤡");
+    hl = $("div", { class: "k-hl" }, [hm, hs]); document.body.append(hl);
+    document.addEventListener("pointerover", e => { if (act) return; const m = target(e.target); if (m && (!cur || m.b !== cur.b)) { cur = m; place() } });
+    addEventListener("scroll", () => !act && place(), { passive: true }); addEventListener("resize", () => place());
+    const start = (kind, e) => { if (!cur) return; e.preventDefault(); e.stopPropagation(); const o = offs()[cur.key] || {};
+      act = { kind, ...cur, sx: e.clientX, sy: e.clientY, o: { x: o.x || 0, y: o.y || 0, s: o.s || 1 }, w: cur.b.getBoundingClientRect().width }; act.n = { ...act.o };
+      document.body.classList.add("k-acting"); if (innerWidth < 900) toast("위치·크기 조정은 PC 화면(가로 900px 이상)에서만 적용돼요") };
+    hm.addEventListener("pointerdown", e => start("move", e)); hs.addEventListener("pointerdown", e => start("size", e));
+    addEventListener("pointermove", e => { if (!act) return; const dx = e.clientX - act.sx, dy = e.clientY - act.sy;
+      if (act.kind === "move") { const vw = 100 / innerWidth; act.n.x = +(act.o.x + dx * vw).toFixed(2); act.n.y = +(act.o.y + dy * vw).toFixed(2) }
+      else act.n.s = +Math.min(4, Math.max(.3, act.o.s * (1 + (dx + dy) / 2 / Math.max(120, act.w * .6)))).toFixed(2);
+      look(act.b, act.n); place() });
+    addEventListener("pointerup", () => { if (!act) return; setOff(act.key, act.n); act = null; document.body.classList.remove("k-acting"); place() });
+    hm.addEventListener("dblclick", () => { if (!cur) return; const o = offs()[cur.key] || {}; const n = { ...o, x: 0, y: 0 }; look(cur.b, n); setOff(cur.key, n); place() });
+    hs.addEventListener("dblclick", () => { if (!cur) return; const o = offs()[cur.key] || {}; const n = { ...o, s: 1 }; look(cur.b, n); setOff(cur.key, n); place() });
+    // 작품 카드: ✥ 손잡이를 잡고 끌어서 순서 변경
     const grid = document.getElementById("grid");
-    grid.addEventListener("dragstart", e => { if (!moveOn) return; dragArt = e.target.closest("article.c"); if (!dragArt) return; e.dataTransfer.effectAllowed = "move"; dragArt.style.opacity = .4 });
+    grid.querySelectorAll("article.c .k-tb").forEach(tb => tb.prepend($("button", { class: "k-btn", title: "끌어서 순서 변경", style: "cursor:grab", onpointerdown: e => { e.target.closest("article.c").draggable = true } }, "✥")));
+    grid.addEventListener("dragstart", e => { dragArt = e.target.closest && e.target.closest("article.c"); if (!dragArt) return; e.dataTransfer.effectAllowed = "move"; dragArt.style.opacity = .4 });
     grid.addEventListener("dragover", e => { if (!dragArt) return; e.preventDefault(); const t = e.target.closest("article.c"); if (!t || t === dragArt) return; const r = t.getBoundingClientRect(); e.clientX < r.left + r.width / 2 ? t.before(dragArt) : t.after(dragArt) });
-    grid.addEventListener("dragend", () => { if (!dragArt) return; dragArt.style.opacity = ""; dragArt = null; moved++; refresh() });
+    grid.addEventListener("dragend", () => { if (!dragArt) return; dragArt.style.opacity = ""; dragArt.draggable = false; dragArt = null; moved++; refresh() });
   }
 
   /* ---------- 저장 ---------- */
   let saveBtn, msgEl;
   function bar() {
     saveBtn = $("button", { class: "k-btn o", onclick: save }, "저장하기");
-    msgEl = $("span", { class: "k-msg" }, "글자를 클릭해서 고치세요");
+    msgEl = $("span", { class: "k-msg" }, "글자 클릭: 수정 · 파란 손잡이: ✥ 이동 ⤡ 크기");
     document.body.append($("div", { class: "k-bar" }, [$("b", { style: "padding:0 6px" }, "편집 모드"), msgEl,
       $("button", { class: "k-btn", onclick: heroPanel }, "메인 영상"),
       $("button", { class: "k-btn", onclick: addCase }, "+ 작품 추가"),
       $("button", { class: "k-btn", onclick: navPanel }, "상단 메뉴"),
       $("button", { class: "k-btn", onclick: secPanel }, "섹션 순서"),
-      moveBtn = $("button", { class: "k-btn", onclick: toggleMove }, "위치 이동"),
       $("button", { class: "k-btn", onclick: infoPanel }, "기본 정보"),
       saveBtn, $("button", { class: "k-btn", onclick: exit }, "나가기")]));
     refresh();
   }
   function refresh() { if (!saveBtn) return; const n = count(); saveBtn.textContent = n ? `저장하기 (${n})` : "저장하기"; saveBtn.disabled = !n }
-  let tt; function toast(t) { if (!msgEl) return alertBox(t); msgEl.textContent = t; clearTimeout(tt); tt = setTimeout(() => msgEl.textContent = "글자를 클릭해서 고치세요", 7000) }
+  let tt; function toast(t) { if (!msgEl) return alertBox(t); msgEl.textContent = t; clearTimeout(tt); tt = setTimeout(() => msgEl.textContent = "글자 클릭: 수정 · 파란 손잡이: ✥ 이동 ⤡ 크기", 7000) }
   function alertBox(t) { modal((md, close) => md.append($("p", {}, t), $("button", { class: "k-btn o", onclick: close }, "확인"))) }
 
   async function save() {
