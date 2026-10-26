@@ -85,20 +85,26 @@
       {
         "client": "미래에셋증권",
         "title": "브랜드 메인 필름",
-        "video": "media/h_mirae.mp4",
-        "poster": "media/h_mirae.jpg"
+        "video": "media/hv_mirae.mp4",
+        "poster": "media/hv_mirae.jpg"
       },
       {
         "client": "신한투자증권",
         "title": "브랜딩 필름",
-        "video": "media/h_shinhan.mp4",
-        "poster": "media/h_shinhan.jpg"
+        "video": "media/hv_shinhan.mp4",
+        "poster": "media/hv_shinhan.jpg"
       },
       {
         "client": "페스티벌플러스",
         "title": "옥외 대형 LED",
-        "video": "media/h_festival.mp4",
-        "poster": "media/h_festival.jpg"
+        "video": "media/hv_festival.mp4",
+        "poster": "media/hv_festival.jpg"
+      },
+      {
+        "client": "IBK기업은행",
+        "title": "IRP 캠페인 필름",
+        "video": "media/hv_ibk.mp4",
+        "poster": "media/hv_ibk.jpg"
       }
     ]
   },
