@@ -34,9 +34,9 @@
 
   /* ---------- styles ---------- */
   document.head.append($("style", {}, `
-  .k-edit x-t[contenteditable]{display:inline;outline:1px dashed rgba(255,80,0,.55);outline-offset:2px;cursor:text;border-radius:2px}
-  .k-edit x-t[contenteditable]:hover{outline-color:#ff5000}
-  .k-edit x-t[contenteditable]:focus{outline:2px solid #ff5000;background:rgba(255,80,0,.08)}
+  .k-edit x-t[contenteditable]{display:inline;cursor:text;outline:none}
+  .k-edit x-t[contenteditable]:focus{background:rgba(255,80,0,.10)}
+  .k-edit #grid x-t[contenteditable]{outline:1px dashed rgba(255,80,0,.55);outline-offset:2px}
   .k-edit .row p{max-height:none!important;opacity:1!important;margin-top:10px!important}
   .k-tb{position:absolute;top:8px;left:8px;z-index:40;display:flex;gap:6px;flex-wrap:wrap;max-width:calc(100% - 16px)}
   .k-btn,.k-tb select{font:600 12px/1 "Pretendard Variable",Pretendard,sans-serif;background:#111;color:#fff;border:0;border-radius:999px;padding:8px 12px;cursor:pointer;letter-spacing:-.01em}
@@ -44,9 +44,15 @@
   .k-bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:9999;display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center;background:#111;color:#fff;padding:10px 12px;border-radius:999px;box-shadow:0 10px 40px rgba(0,0,0,.35);font:500 13px/1.2 "Pretendard Variable",Pretendard,sans-serif;max-width:calc(100% - 24px)}
   .k-bar .k-btn{background:#2a2a2a}.k-bar .k-btn.o{background:#ff5000}
   .k-msg{padding:0 6px;color:#bbb}
-  .k-hl{position:fixed;z-index:9000;display:none;pointer-events:none;outline:1.5px dashed #2962ff;border-radius:4px}
-  .k-h{position:absolute;pointer-events:auto;width:26px;height:26px;border-radius:50%;background:#2962ff;color:#fff;display:flex;align-items:center;justify-content:center;font:700 14px/1 sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);user-select:none;touch-action:none}
-  .k-hm{left:-14px;top:-14px;cursor:move}.k-hs{right:-14px;bottom:-14px;cursor:nwse-resize}
+  .k-ui{position:fixed;pointer-events:none;z-index:9000;display:none}
+  .k-hov{outline:1px dashed rgba(41,98,255,.7);border-radius:3px}
+  .k-sel{outline:2px solid #2962ff;border-radius:3px}.k-sel.ed{outline-color:#ff5000}
+  .k-h{position:absolute;pointer-events:auto;width:24px;height:24px;border-radius:50%;background:#2962ff;color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px/1 sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);user-select:none;touch-action:none}
+  .k-hs{right:-13px;bottom:-13px;cursor:nwse-resize}
+  .k-lab{position:absolute;right:16px;bottom:-30px;display:none;background:#2962ff;color:#fff;font:600 11px/1 sans-serif;padding:5px 7px;border-radius:6px}
+  .k-gv{top:0;bottom:0;width:0;border-left:1px solid #ff2d8a}.k-gh{left:0;right:0;height:0;border-top:1px solid #ff2d8a}
+  .k-grid{inset:0;padding:0 28px;grid-template-columns:repeat(12,1fr);gap:20px;z-index:8000}.k-grid i{background:rgba(255,45,138,.07);border-left:1px solid rgba(255,45,138,.18);border-right:1px solid rgba(255,45,138,.18)}
+  .k-edit [data-k]{cursor:default}
   .k-acting,.k-acting *{user-select:none!important;-webkit-user-select:none!important}
   .k-edit .dots .hint{pointer-events:auto}
   .k-ov{position:fixed;inset:0;z-index:10000;background:rgba(0,0,0,.55);display:flex;align-items:center;justify-content:center;padding:16px}
@@ -93,13 +99,14 @@
   function enable() {
     document.body.classList.add("k-edit");
     document.querySelectorAll("x-t[data-k]").forEach(editable);
-    document.addEventListener("click", e => { if (e.target.closest("x-t[contenteditable]")) e.preventDefault() }, true);
     mediaBars(); caseBars(); bar(); handles();
     addEventListener("beforeunload", e => { if (count()) { e.preventDefault(); e.returnValue = "" } });
   }
   function editable(x) {
       if (x.closest(".now")) return;
-      x.setAttribute("contenteditable", "plaintext-only"); x.spellcheck = false;
+      x.spellcheck = false;
+      if (x.closest("#grid")) x.setAttribute("contenteditable", "plaintext-only");
+      else x.addEventListener("blur", () => { x.removeAttribute("contenteditable"); if (editing === x) { editing = null; place() } });
       x.addEventListener("focus", () => { x._rec = false; x._start = x.innerText });
       x.addEventListener("input", () => {
         if (!x._rec) { rec(); x._rec = true }
@@ -109,7 +116,7 @@
         if (k === "hero.wordmark") dispatchEvent(new Event("resize"));
         refresh();
       });
-      x.addEventListener("keydown", e => { if (e.key === "Escape") x.blur(); if (e.key === "Enter" && x.closest("header")) { e.preventDefault(); x.blur() } });
+      x.addEventListener("keydown", e => { if (e.key === "Enter" && x.closest("header")) { e.preventDefault(); x.blur() } });
   }
 
   /* ---------- 미디어 ---------- */
@@ -240,7 +247,7 @@
     const nav = document.querySelector("header nav"), a = items.map((n, i) => $("a", { href: "#" + n.target }, [$("x-t", { "data-k": `nav.items.${i}.label` }, n.label)]));
     nav.innerHTML = ""; const k = a.length;
     if (k <= 3) a.forEach(x => nav.append($("div", {}, x))); else nav.append($("div", {}, a.slice(0, k - 2)), $("div", {}, a[k - 2]), $("div", {}, a[k - 1]));
-    nav.querySelectorAll("x-t").forEach(editable);
+    nav.querySelectorAll("x-t").forEach(editable); indexBlocks();
   }
   function navPanel() {
     let items = navItems();
@@ -293,49 +300,116 @@
     });
   }
 
-  /* ---------- 마우스로 위치·크기 (글자에 마우스를 올리면 손잡이가 나타남) ---------- */
-  let cur = null, act = null, dragArt = null, hl, hm, hs;
+  /* ---------- 선택 · 이동 · 크기 · 정렬(자석) ----------
+     클릭: 선택 / 빈 곳 클릭·Esc: 해제 / 끌기: 이동 / 더블클릭·Enter: 글자 수정
+     ⌥(Option)+클릭: 겹친 아래 글자 선택 / 방향키: 1px(Shift 10px) / ⌘ 누른 채 끌기: 자석 끄기 */
+  let sel = null, act = null, editing = null, dragArt = null, lastNudge = 0, blocks = new Map();
+  const ui = {};
   const keyOf = x => { const k = x.dataset.k, all = [...document.querySelectorAll(`x-t[data-k="${k}"]`)], n = all.indexOf(x); return n > 0 ? `${k}@${n}` : k };
   const offs = () => JSON.parse(JSON.stringify(val("layout.offsets") || {}));
   const fitted = b => !!(b.closest("#word") || b.id === "huge");
   const applied = new Set(Object.keys(window.__koff || {}));
   function setOff(key, o) { applied.add(key); const all = offs(); if (o && (o.x || o.y || (o.s && o.s !== 1))) all[key] = o; else delete all[key]; sets.set("layout.offsets", all); window.__koff = all; refresh() }
   function look(b, o) { const z = !fitted(b) && o.s && o.s !== 1 ? o.s : 1; b.style.zoom = z !== 1 ? z : ""; b.style.translate = (o.x || o.y) ? `${(o.x || 0) / z}vw ${(o.y || 0) / z}vw` : "" }
-  function target(t) {
-    if (!t || !t.closest || t.closest(".k-bar,.k-ov,.k-tb,.k-hl,#grid,.now")) return null;
-    let x = t.closest("x-t[data-k]");
-    if (!x && t.querySelector) { const y = t.querySelector("x-t[data-k]"); if (y && window.__kblock(y) === t) x = y }
-    if (!x) return null;
-    const b = window.__kblock(x); return { b, key: keyOf(b.querySelector("x-t[data-k]") || x) };
+  function indexBlocks() { blocks = new Map(); document.querySelectorAll("x-t[data-k]").forEach(x => { if (x.closest(".now,#grid")) return; const b = window.__kblock(x); if (!blocks.has(b)) blocks.set(b, x) }); if (sel && !sel.b.isConnected) sel = null }
+  const isUI = t => !t || !t.closest || !!t.closest(".k-bar,.k-ov,.k-tb,.k-ui");
+  function blockAt(t) { if (isUI(t)) return null; for (let e = t; e && e !== document.body; e = e.parentElement) if (blocks.has(e)) return e; return null }
+  const info = b => ({ b, key: keyOf(b.querySelector("x-t[data-k]") || blocks.get(b)) });
+  function pickB(e) {
+    if (!e.altKey) return blockAt(e.target);
+    const stack = []; document.elementsFromPoint(e.clientX, e.clientY).forEach(el => { const b = blockAt(el); if (b && !stack.includes(b)) stack.push(b) });
+    if (!stack.length) return null; const i = sel ? stack.indexOf(sel.b) : -1; return stack[(i + 1) % stack.length];
   }
-  function place() { if (!cur) { hl.style.display = "none"; return } const r = cur.b.getBoundingClientRect();
-    Object.assign(hl.style, { display: "block", left: r.left - 4 + "px", top: r.top - 4 + "px", width: r.width + 8 + "px", height: r.height + 8 + "px" }); hs.style.display = fitted(cur.b) ? "none" : "";
-    // 손잡이가 화면 밖으로 나가지 않게 안쪽으로 당김
+  const fit = (el, r, p = 4) => Object.assign(el.style, { display: "block", left: r.left - p + "px", top: r.top - p + "px", width: r.width + p * 2 + "px", height: r.height + p * 2 + "px" });
+  function place() {
+    if (!ui.sel) return;
+    if (!sel || !sel.b.isConnected) { ui.sel.style.display = "none"; return }
+    const r = sel.b.getBoundingClientRect(); fit(ui.sel, r); ui.sel.classList.toggle("ed", !!editing);
+    ui.hs.style.display = fitted(sel.b) || editing ? "none" : "";
     const bar = document.querySelector(".k-bar"), barTop = bar ? bar.getBoundingClientRect().top - 8 : innerHeight;
-    hm.style.left = r.left < 18 ? "4px" : ""; hm.style.top = r.top < 18 ? "4px" : "";
-    hs.style.right = r.right > innerWidth - 22 ? "4px" : ""; hs.style.bottom = r.bottom > barTop - 18 ? Math.min(r.height - 30, r.bottom - barTop + 22) + "px" : "" }
+    ui.hs.style.right = r.right > innerWidth - 22 ? "4px" : ""; ui.hs.style.bottom = r.bottom > barTop - 18 ? Math.min(r.height - 30, r.bottom - barTop + 22) + "px" : "";
+  }
+  function select(m) { if (editing && (!m || m.b !== sel?.b)) editing.blur(); sel = m; place() }
+  function startEdit(x, e) {
+    if (!x) return; if (sel?.b !== window.__kblock(x)) select(info(window.__kblock(x)));
+    x.setAttribute("contenteditable", "plaintext-only"); x.focus(); editing = x;
+    const r = e && document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
+    if (r && x.contains(r.startContainer)) { const s = getSelection(); s.removeAllRanges(); s.addRange(r) }
+    place(); toast("글자 수정 중 · 다 고치면 Esc 또는 빈 곳 클릭");
+  }
+  // 자석: 다른 글자 가장자리·가운데, 12칸 레이아웃 그리드, 화면 가운데
+  function gridLines() { const P = 28, G = 20, W = innerWidth, cw = (W - P * 2 - G * 11) / 12, xs = [W / 2]; for (let i = 0; i < 12; i++) { const l = P + i * (cw + G); xs.push(l, l + cw) } return xs }
+  function cands(b) {
+    const xs = gridLines(), ys = [];
+    blocks.forEach((_, o) => { if (o === b || o.contains(b) || b.contains(o)) return; const r = o.getBoundingClientRect();
+      if (!r.width || r.bottom < -300 || r.top > innerHeight + 300) return; xs.push(r.left, (r.left + r.right) / 2, r.right); ys.push(r.top, (r.top + r.bottom) / 2, r.bottom) });
+    return { xs, ys };
+  }
+  function snap(v3, list, off) { let best = null; if (off) return [0, null]; for (const c of list) for (const v of v3) { const d = c - v; if (Math.abs(d) <= 6 && (best == null || Math.abs(d) < Math.abs(best[0]))) best = [d, c] } return best || [0, null] }
+  function guides(gx, gy) { ui.gv.style.display = gx == null ? "none" : "block"; ui.gv.style.left = gx + "px"; ui.gh.style.display = gy == null ? "none" : "block"; ui.gh.style.top = gy + "px" }
+  function toggleGrid(on) { ui.grid.style.display = on ? "grid" : "none"; ui.gridBtn.classList.toggle("o", on) }
+
   function handles() {
-    hm = $("b", { class: "k-h k-hm", title: "끌어서 옮기기 · 더블클릭하면 제자리" }, "✥");
-    hs = $("b", { class: "k-h k-hs", title: "끌어서 크기 조절 · 더블클릭하면 원래 크기" }, "⤡");
-    hl = $("div", { class: "k-hl" }, [hm, hs]); document.body.append(hl);
-    // 손잡이로 가는 동안 다른 글자로 바뀌지 않도록: 현재 글자 영역·손잡이 근처에 있으면 유지
-    const near = (e, el) => { const r = el.getBoundingClientRect(); return e.clientX >= r.left - 6 && e.clientX <= r.right + 6 && e.clientY >= r.top - 6 && e.clientY <= r.bottom + 6 };
-    const nearH = e => [hm, hs].some(h => { const r = h.getBoundingClientRect(); return r.width && Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2)) < 18 });
-    document.addEventListener("pointermove", e => { if (act) return; if (cur && (nearH(e) || near(e, cur.b))) return;
-      const m = target(e.target); if (m && (!cur || m.b !== cur.b)) { cur = m; place() } });
+    indexBlocks();
+    ui.hov = $("div", { class: "k-ui k-hov" });
+    ui.hs = $("b", { class: "k-h k-hs", title: "끌어서 크기 조절 (아래로 크게 · 위로 작게) · 더블클릭: 원래 크기" }, "⤡");
+    ui.lab = $("span", { class: "k-lab" });
+    ui.sel = $("div", { class: "k-ui k-sel" }, [ui.hs, ui.lab]);
+    ui.gv = $("div", { class: "k-ui k-gv" }); ui.gh = $("div", { class: "k-ui k-gh" });
+    ui.grid = $("div", { class: "k-ui k-grid" }, Array.from({ length: 12 }, () => $("i")));
+    document.body.append(ui.grid, ui.hov, ui.sel, ui.gv, ui.gh);
+    window.__kstate = () => ({ sel: sel && sel.key, act: !!act, editing: !!editing });
+
+    document.addEventListener("pointerdown", e => {
+      if (e.button || isUI(e.target)) return;
+      if (editing && editing.contains(e.target)) return;                 // 수정 중인 글자 안: 커서 이동
+      const b = pickB(e);
+      if (!b) { if (!e.target.closest("#grid,#dots")) select(null); return }
+      e.preventDefault(); if (editing) editing.blur();
+      if (!sel || sel.b !== b) select(info(b));
+      const o = offs()[sel.key] || {};
+      act = { kind: "move", ...sel, sx: e.clientX, sy: e.clientY, r0: b.getBoundingClientRect(), o: { x: o.x || 0, y: o.y || 0, s: o.s || 1 } }; act.n = { ...act.o };
+    }, true);
+    ui.hs.addEventListener("pointerdown", e => { if (!sel) return; e.preventDefault(); e.stopPropagation(); const o = offs()[sel.key] || {};
+      act = { kind: "size", ...sel, sx: e.clientX, sy: e.clientY, w: sel.b.getBoundingClientRect().width, o: { x: o.x || 0, y: o.y || 0, s: o.s || 1 } }; act.n = { ...act.o } });
+    ui.hs.addEventListener("dblclick", e => { e.stopPropagation(); if (!sel) return; rec(); const n = { ...(offs()[sel.key] || {}), s: 1 }; look(sel.b, n); setOff(sel.key, n); place() });
+
+    addEventListener("pointermove", e => {
+      if (!act) { if (e.buttons) return; const b = blockAt(e.target); if (b && (!sel || b !== sel.b)) fit(ui.hov, b.getBoundingClientRect(), 3); else ui.hov.style.display = "none"; return }
+      const dx = e.clientX - act.sx, dy = e.clientY - act.sy;
+      if (!act.started) { if (act.kind === "move" && Math.hypot(dx, dy) < 4) return; act.started = true; rec(); ui.hov.style.display = "none";
+        document.body.classList.add("k-acting"); if (act.kind === "move") act.c = cands(act.b);
+        if (innerWidth < 900) toast("위치·크기 조정은 PC 화면(가로 900px 이상)에서만 적용돼요") }
+      if (act.kind === "move") {
+        const r = act.r0, off = e.metaKey || e.ctrlKey;
+        const [ax, gx] = snap([r.left + dx, (r.left + r.right) / 2 + dx, r.right + dx], act.c.xs, off);
+        const [ay, gy] = snap([r.top + dy, (r.top + r.bottom) / 2 + dy, r.bottom + dy], act.c.ys, off);
+        const vw = 100 / innerWidth; act.n.x = +(act.o.x + (dx + ax) * vw).toFixed(2); act.n.y = +(act.o.y + (dy + ay) * vw).toFixed(2);
+        guides(gx, gy);
+      } else { act.n.s = +Math.min(4, Math.max(.3, act.o.s * (1 + (dx + dy) / 2 / Math.max(120, act.w * .6)))).toFixed(2); ui.lab.textContent = Math.round(act.n.s * 100) + "%"; ui.lab.style.display = "block" }
+      look(act.b, act.n); place();
+    });
+    addEventListener("pointerup", () => { if (!act) return; if (act.started) setOff(act.key, act.n); act = null; guides(null, null); ui.lab.style.display = "none"; document.body.classList.remove("k-acting"); place() });
+
+    document.addEventListener("dblclick", e => { if (isUI(e.target)) return; const b = blockAt(e.target); if (!b) return; e.preventDefault();
+      const r = document.caretRangeFromPoint && document.caretRangeFromPoint(e.clientX, e.clientY), n = r && r.startContainer;
+      const x = (n && (n.nodeType === 3 ? n.parentElement : n).closest && (n.nodeType === 3 ? n.parentElement : n).closest("x-t[data-k]")) || blocks.get(b);
+      startEdit(b.contains(x) ? x : blocks.get(b), e) }, true);
+    document.addEventListener("click", e => { if (isUI(e.target)) return; if (e.target.closest("a") && !e.target.closest("#grid .k-tb")) e.preventDefault() }, true);
+
+    document.addEventListener("keydown", e => {
+      const a = document.activeElement, typing = a && (a.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(a.tagName));
+      if (e.key === "Escape") { if (editing) { editing.blur(); e.preventDefault() } else if (!typing) select(null); return }
+      if (typing || !sel) { if (!typing && (e.key === "g" || e.key === "G") && !e.metaKey) toggleGrid(ui.grid.style.display !== "grid"); return }
+      if (e.key === "Enter") { e.preventDefault(); startEdit(blocks.get(sel.b) || sel.b.querySelector("x-t[data-k]")); return }
+      if ((e.key === "g" || e.key === "G") && !e.metaKey) { toggleGrid(ui.grid.style.display !== "grid"); return }
+      const d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key]; if (!d) return;
+      e.preventDefault(); if (Date.now() - lastNudge > 800) rec(); lastNudge = Date.now();
+      const st = e.shiftKey ? 10 : 1, vw = 100 / innerWidth, o = offs()[sel.key] || {};
+      const n = { ...o, x: +((o.x || 0) + d[0] * st * vw).toFixed(3), y: +((o.y || 0) + d[1] * st * vw).toFixed(3) }; look(sel.b, n); setOff(sel.key, n); place();
+    });
     addEventListener("scroll", () => !act && place(), { passive: true }); addEventListener("resize", () => place());
-    window.__kstate = () => ({ cur: cur && cur.key, act: !!act, inDoc: !!(cur && cur.b.isConnected) });
-    const start = (kind, e) => { if (!cur) return; e.preventDefault(); e.stopPropagation(); const o = offs()[cur.key] || {};
-      act = { kind, ...cur, sx: e.clientX, sy: e.clientY, o: { x: o.x || 0, y: o.y || 0, s: o.s || 1 }, w: cur.b.getBoundingClientRect().width }; act.n = { ...act.o };
-      document.body.classList.add("k-acting"); if (innerWidth < 900) toast("위치·크기 조정은 PC 화면(가로 900px 이상)에서만 적용돼요") };
-    hm.addEventListener("pointerdown", e => start("move", e)); hs.addEventListener("pointerdown", e => start("size", e));
-    addEventListener("pointermove", e => { if (!act) return; if (!act.recd) { rec(); act.recd = true } const dx = e.clientX - act.sx, dy = e.clientY - act.sy;
-      if (act.kind === "move") { const vw = 100 / innerWidth; act.n.x = +(act.o.x + dx * vw).toFixed(2); act.n.y = +(act.o.y + dy * vw).toFixed(2) }
-      else act.n.s = +Math.min(4, Math.max(.3, act.o.s * (1 + (dx + dy) / 2 / Math.max(120, act.w * .6)))).toFixed(2);
-      look(act.b, act.n); place() });
-    addEventListener("pointerup", () => { if (!act) return; setOff(act.key, act.n); act = null; document.body.classList.remove("k-acting"); place() });
-    hm.addEventListener("dblclick", () => { if (!cur) return; rec(); const o = offs()[cur.key] || {}; const n = { ...o, x: 0, y: 0 }; look(cur.b, n); setOff(cur.key, n); place() });
-    hs.addEventListener("dblclick", () => { if (!cur) return; rec(); const o = offs()[cur.key] || {}; const n = { ...o, s: 1 }; look(cur.b, n); setOff(cur.key, n); place() });
+
     // 작품 카드: ✥ 손잡이를 잡고 끌어서 순서 변경
     const grid = document.getElementById("grid");
     grid.querySelectorAll("article.c .k-tb").forEach(tb => tb.prepend($("button", { class: "k-btn", title: "끌어서 순서 변경", style: "cursor:grab", onpointerdown: e => { e.target.closest("article.c").draggable = true } }, "✥")));
@@ -389,7 +463,7 @@
       const v = a.querySelector("video"), im = a.querySelector("img"), vs = src(val(`cases.items.${i}.video`)), ps = src(val(`cases.items.${i}.poster`));
       if (v && v.dataset.src !== vs) { v.dataset.src = vs; if (v.getAttribute("src")) v.src = vs }
       if (im && im.getAttribute("src") !== ps) im.src = ps });
-    dispatchEvent(new Event("resize")); if (cur) place();
+    indexBlocks(); dispatchEvent(new Event("resize")); place();
   }
   document.addEventListener("keydown", e => {
     if (!(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== "z" || !J) return;
@@ -407,18 +481,19 @@
   function bar() {
     saveBtn = $("button", { class: "k-btn o", onclick: save }, "저장하기");
     undoBtn = $("button", { class: "k-btn", title: "되돌리기 (⌘Z) · 다시 하기 (⌘⇧Z)", onclick: undo }, "↶ 되돌리기");
-    msgEl = $("span", { class: "k-msg" }, "글자 클릭: 수정 · 파란 손잡이: ✥ 이동 ⤡ 크기");
+    ui.gridBtn = $("button", { class: "k-btn", title: "12칸 레이아웃 그리드 보기 (G)", onclick: () => toggleGrid(ui.grid.style.display !== "grid") }, "그리드");
+    msgEl = $("span", { class: "k-msg" }, "클릭: 선택 · 끌기: 이동 · 더블클릭: 글자 수정 · ⌥클릭: 겹친 글자");
     document.body.append($("div", { class: "k-bar" }, [$("b", { style: "padding:0 6px" }, "편집 모드"), msgEl,
       $("button", { class: "k-btn", onclick: heroPanel }, "메인 영상"),
       $("button", { class: "k-btn", onclick: addCase }, "+ 작품 추가"),
       $("button", { class: "k-btn", onclick: navPanel }, "상단 메뉴"),
       $("button", { class: "k-btn", onclick: secPanel }, "섹션 순서"),
       $("button", { class: "k-btn", onclick: infoPanel }, "기본 정보"),
-      undoBtn, saveBtn, $("button", { class: "k-btn", onclick: exit }, "나가기")]));
+      ui.gridBtn, undoBtn, saveBtn, $("button", { class: "k-btn", onclick: exit }, "나가기")]));
     refresh();
   }
   function refresh() { if (undoBtn) { undoBtn.disabled = !hist.length; undoBtn.textContent = hist.length ? `↶ 되돌리기 (${hist.length})` : "↶ 되돌리기" } if (!saveBtn) return; const n = count(); saveBtn.textContent = n ? `저장하기 (${n})` : "저장하기"; saveBtn.disabled = !n }
-  let tt; function toast(t) { if (!msgEl) return alertBox(t); msgEl.textContent = t; clearTimeout(tt); tt = setTimeout(() => msgEl.textContent = "글자 클릭: 수정 · 파란 손잡이: ✥ 이동 ⤡ 크기", 7000) }
+  let tt; function toast(t) { if (!msgEl) return alertBox(t); msgEl.textContent = t; clearTimeout(tt); tt = setTimeout(() => msgEl.textContent = "클릭: 선택 · 끌기: 이동 · 더블클릭: 글자 수정 · ⌥클릭: 겹친 글자", 7000) }
   function alertBox(t) { modal((md, close) => md.append($("p", {}, t), $("button", { class: "k-btn o", onclick: close }, "확인"))) }
 
   async function save() {
