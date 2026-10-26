@@ -60,7 +60,18 @@
         "hidden": false
       }
     ],
-    "offsets": {}
+    "offsets": {
+      "nav.items.1.label": {
+        "x": -5.92,
+        "y": 0,
+        "s": 1
+      },
+      "nav.items.2.label": {
+        "x": -24.36,
+        "y": 0,
+        "s": 1
+      }
+    }
   },
   "hero": {
     "wordmark": "5K.STUDIO",
