@@ -27,7 +27,7 @@ header nav{display:grid;grid-template-columns:1fr 1fr 1fr;font-size:15px;font-we
 header nav div{display:flex;flex-direction:column}
 header nav div:last-child{align-items:flex-end}
 header nav a:hover{opacity:.6}
-@media (max-width:760px){header nav div:nth-child(2){display:none}header nav{grid-template-columns:1fr 1fr}header .deck{display:none}}
+@media (max-width:760px){header nav{display:flex;justify-content:flex-end;gap:16px}header nav div{flex-direction:row;gap:16px}header .deck{display:none}}
 
 /* hero */
 .hero{position:relative;height:100svh;min-height:560px;overflow:hidden;background:#000;color:#fff}

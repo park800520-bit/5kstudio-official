@@ -8,19 +8,15 @@
     "logo": "5K.STUDIO",
     "items": [
       {
-        "label": "프로젝트",
+        "label": "About",
+        "target": "statement"
+      },
+      {
+        "label": "Work",
         "target": "cases"
       },
       {
-        "label": "서비스",
-        "target": "what"
-      },
-      {
-        "label": "스튜디오",
-        "target": "vision"
-      },
-      {
-        "label": "문의",
+        "label": "Contact",
         "target": "contact"
       }
     ]

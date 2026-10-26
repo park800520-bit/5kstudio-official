@@ -259,7 +259,7 @@
           b("삭제", () => items.splice(i, 1), "")]));
       }) };
       draw();
-      md.append($("h3", {}, "상단 메뉴"), $("p", {}, "메뉴 이름을 고치고, 누르면 이동할 섹션을 고르세요. 왼쪽부터 순서대로 보여요. (휴대폰에서는 가운데 칸 메뉴가 숨겨져요)"), list,
+      md.append($("h3", {}, "상단 메뉴"), $("p", {}, "메뉴 이름을 고치고, 누르면 이동할 섹션을 고르세요. 왼쪽부터 순서대로 보여요."), list,
         $("div", { class: "row2" }, [$("button", { class: "k-btn w", onclick: () => { rec(); items.push({ label: "새 메뉴", target: "top" }); commit(); draw() } }, "+ 메뉴 추가"), $("button", { class: "k-btn o", onclick: close }, "닫기")]));
     });
   }
