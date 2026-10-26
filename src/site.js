@@ -70,7 +70,9 @@
   window.__koff=(()=>{try{return JSON.parse(document.getElementById("k-off").textContent||"{}")}catch(e){return{}}})();
   window.__kapply=()=>{const on=matchMedia("(min-width:900px)").matches;for(const k in __koff){const x=__kfind(k);if(!x)continue;const o=__koff[k],b=__kblock(x);
     const z=on&&o.s&&o.s!==1&&!b.closest("#word")&&b.id!=="huge"?o.s:1;b.style.zoom=z!==1?z:"";
-    b.style.translate=on&&(o.x||o.y)?`${(o.x||0)/z}vw ${(o.y||0)/z}vw`:""}};
+    b.style.translate=on&&(o.x||o.y)?`${(o.x||0)/z}vw ${(o.y||0)/z}vw`:"";
+    const st=b.style;st.whiteSpace=st.width=st.maxWidth=st.marginLeft=st.marginRight="";
+    if(on&&o.w&&!b.closest("#word")&&b.id!=="huge"){const ta=getComputedStyle(b).textAlign;st.whiteSpace="nowrap";st.width="max-content";st.maxWidth="none";if(ta==="center")st.marginLeft=st.marginRight="auto";else if(ta==="right"||ta==="end")st.marginLeft="auto"}}};
   __kapply();addEventListener("resize",__kapply);
   // edit mode: open the site with ?edit (or #edit)
   if(/[?&#]edit\b/.test(location.href)){const s=document.createElement("script");s.src="edit.js?"+Date.now();document.body.appendChild(s)}

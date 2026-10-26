@@ -49,6 +49,8 @@
   .k-sel{outline:2px solid #2962ff;border-radius:3px}.k-sel.ed{outline-color:#ff5000}
   .k-h{position:absolute;pointer-events:auto;width:24px;height:24px;border-radius:50%;background:#2962ff;color:#fff;display:flex;align-items:center;justify-content:center;font:700 13px/1 sans-serif;box-shadow:0 2px 8px rgba(0,0,0,.3);user-select:none;touch-action:none}
   .k-hs{right:-13px;bottom:-13px;cursor:nwse-resize}
+  .k-aw{position:absolute;left:-2px;top:-30px;pointer-events:auto;cursor:pointer;background:#2962ff;color:#fff;font:600 11px/1 "Pretendard Variable",Pretendard,sans-serif;padding:6px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25);user-select:none}
+  .k-aw.on{background:#111}
   .k-lab{position:absolute;right:16px;bottom:-30px;display:none;background:#2962ff;color:#fff;font:600 11px/1 sans-serif;padding:5px 7px;border-radius:6px}
   .k-gv{top:0;bottom:0;width:0;border-left:1px solid #ff2d8a}.k-gh{left:0;right:0;height:0;border-top:1px solid #ff2d8a}
   .k-grid{inset:0;padding:0 28px;grid-template-columns:repeat(12,1fr);gap:20px;z-index:8000}.k-grid i{background:rgba(255,45,138,.07);border-left:1px solid rgba(255,45,138,.18);border-right:1px solid rgba(255,45,138,.18)}
@@ -109,12 +111,13 @@
       else x.addEventListener("blur", () => { x.removeAttribute("contenteditable"); if (editing === x) { editing = null; place() } });
       x.addEventListener("focus", () => { x._rec = false; x._start = x.innerText });
       x.addEventListener("input", () => {
-        if (!x._rec) { rec(); x._rec = true }
+        if (!x._rec) { rec(); x._rec = true;
+          if (x._autoW) { x._autoW = false; const b = window.__kblock(x), m = info(b), n = { ...(offs()[m.key] || {}), w: 1 }; look(b, n); setOff(m.key, n) } }
         const k = x.dataset.k, v = x.innerText.replace(/\n$/, "");
         sets.set(k, v);
         document.querySelectorAll(`x-t[data-k="${k}"]`).forEach(o => { if (o !== x) o.innerText = v });
         if (k === "hero.wordmark") dispatchEvent(new Event("resize"));
-        refresh();
+        refresh(); if (typeof place === "function") { place(); requestAnimationFrame(place) }
       });
       x.addEventListener("keydown", e => { if (e.key === "Enter" && x.closest("header")) { e.preventDefault(); x.blur() } });
   }
@@ -309,8 +312,34 @@
   const offs = () => JSON.parse(JSON.stringify(val("layout.offsets") || {}));
   const fitted = b => !!(b.closest("#word") || b.id === "huge");
   const applied = new Set(Object.keys(window.__koff || {}));
-  function setOff(key, o) { applied.add(key); const all = offs(); if (o && (o.x || o.y || (o.s && o.s !== 1))) all[key] = o; else delete all[key]; sets.set("layout.offsets", all); window.__koff = all; refresh() }
-  function look(b, o) { const z = !fitted(b) && o.s && o.s !== 1 ? o.s : 1; b.style.zoom = z !== 1 ? z : ""; b.style.translate = (o.x || o.y) ? `${(o.x || 0) / z}vw ${(o.y || 0) / z}vw` : "" }
+  function setOff(key, o) { applied.add(key); const all = offs(); if (o && (o.x || o.y || o.w || (o.s && o.s !== 1))) all[key] = o; else delete all[key]; sets.set("layout.offsets", all); window.__koff = all; refresh() }
+  function look(b, o) { const z = !fitted(b) && o.s && o.s !== 1 ? o.s : 1; b.style.zoom = z !== 1 ? z : ""; b.style.translate = (o.x || o.y) ? `${(o.x || 0) / z}vw ${(o.y || 0) / z}vw` : "";
+    // 자동 너비: 글자가 길어지면 줄바꿈 없이 옆으로 늘어남 (줄은 Enter로만 바뀜)
+    const st = b.style; st.whiteSpace = st.width = st.maxWidth = st.marginLeft = st.marginRight = "";
+    if (o.w && !fitted(b)) { const ta = getComputedStyle(b).textAlign; st.whiteSpace = "nowrap"; st.width = "max-content"; st.maxWidth = "none";
+      if (ta === "center") st.marginLeft = st.marginRight = "auto"; else if (ta === "right" || ta === "end") st.marginLeft = "auto" } }
+  const lineCount = x => { const r = document.createRange(); r.selectNodeContents(x); const tops = []; [...r.getClientRects()].forEach(c => { if (c.width && !tops.some(t => Math.abs(t - c.top) < c.height / 2)) tops.push(c.top) }); return tops.length || 1 };
+  // 지금 보이는 줄바꿈을 그대로 실제 줄바꿈(Enter)으로 바꿔 둠 — 자동 너비로 바꿔도 모양 유지
+  function visualText(x) {
+    let out = "", last = null; const w = document.createTreeWalker(x, NodeFilter.SHOW_TEXT | NodeFilter.SHOW_ELEMENT);
+    for (let n = w.nextNode(); n; n = w.nextNode()) {
+      if (n.nodeType === 1) { if (n.tagName === "BR") { out += "\n"; last = null } continue }
+      const t = n.textContent;
+      for (let i = 0; i < t.length; i++) { const r = document.createRange(); r.setStart(n, i); r.setEnd(n, i + 1); const c = r.getClientRects()[0];
+        if (c && c.width) { if (last != null && c.top > last.top + last.height / 2) {
+          if (t[i] !== " " && !/[ \n]$/.test(out)) { const sp = out.lastIndexOf(" "), nl = out.lastIndexOf("\n");   // 단어 중간이면 앞 띄어쓰기에서 줄바꿈
+            out = sp > nl ? out.slice(0, sp) + "\n" + out.slice(sp + 1) : out + "\n" }
+          else { out = out.replace(/ +$/, ""); if (!out.endsWith("\n")) out += "\n"; if (t[i] === " ") { last = c; continue } } } last = c }
+        out += t[i] }
+    }
+    return out.replace(/ +\n/g, "\n");
+  }
+  function setAutoW(on) {
+    if (!sel || fitted(sel.b)) return; rec();
+    if (on) sel.b.querySelectorAll("x-t[data-k]").forEach(x => { if (x.closest(".now")) return; const v = visualText(x); if (v !== x.innerText) { sets.set(x.dataset.k, v); document.querySelectorAll(`x-t[data-k="${x.dataset.k}"]`).forEach(o => o.innerText = v) } });
+    const n = { ...(offs()[sel.key] || {}) }; if (on) n.w = 1; else delete n.w; look(sel.b, n); setOff(sel.key, n); place();
+    toast(on ? "한 줄로 늘이기: 글자가 길어지면 옆으로 늘어나요 (줄바꿈은 Enter)" : "자동 줄바꿈: 칸 너비에 맞춰 아래 줄로 넘어가요");
+  }
   function indexBlocks() { blocks = new Map(); document.querySelectorAll("x-t[data-k]").forEach(x => { if (x.closest(".now,#grid")) return; const b = window.__kblock(x); if (!blocks.has(b)) blocks.set(b, x) }); if (sel && !sel.b.isConnected) sel = null }
   const isUI = t => !t || !t.closest || !!t.closest(".k-bar,.k-ov,.k-tb,.k-ui");
   function blockAt(t) { if (isUI(t)) return null; for (let e = t; e && e !== document.body; e = e.parentElement) if (blocks.has(e)) return e; return null }
@@ -326,12 +355,15 @@
     if (!sel || !sel.b.isConnected) { ui.sel.style.display = "none"; return }
     const r = sel.b.getBoundingClientRect(); fit(ui.sel, r); ui.sel.classList.toggle("ed", !!editing);
     ui.hs.style.display = fitted(sel.b) || editing ? "none" : "";
+    const aw = !!(offs()[sel.key] || {}).w; ui.aw.style.display = fitted(sel.b) ? "none" : ""; ui.aw.textContent = aw ? "↩ 자동 줄바꿈으로" : "↔ 한 줄로 늘이기"; ui.aw.classList.toggle("on", aw);
+    ui.aw.style.top = r.top < 34 ? "auto" : ""; ui.aw.style.bottom = r.top < 34 ? "-30px" : "";
     const bar = document.querySelector(".k-bar"), barTop = bar ? bar.getBoundingClientRect().top - 8 : innerHeight;
     ui.hs.style.right = r.right > innerWidth - 22 ? "4px" : ""; ui.hs.style.bottom = r.bottom > barTop - 18 ? Math.min(r.height - 30, r.bottom - barTop + 22) + "px" : "";
   }
   function select(m) { if (editing && (!m || m.b !== sel?.b)) editing.blur(); sel = m; place() }
   function startEdit(x, e) {
     if (!x) return; if (sel?.b !== window.__kblock(x)) select(info(window.__kblock(x)));
+    x._autoW = !fitted(sel.b) && !(offs()[sel.key] || {}).w && lineCount(x) === 1;   // 한 줄짜리 글자는 자동으로 한 줄로 늘이기
     x.setAttribute("contenteditable", "plaintext-only"); x.focus(); editing = x;
     const r = e && document.caretRangeFromPoint ? document.caretRangeFromPoint(e.clientX, e.clientY) : null;
     if (r && x.contains(r.startContainer)) { const s = getSelection(); s.removeAllRanges(); s.addRange(r) }
@@ -354,7 +386,8 @@
     ui.hov = $("div", { class: "k-ui k-hov" });
     ui.hs = $("b", { class: "k-h k-hs", title: "끌어서 크기 조절 (아래로 크게 · 위로 작게) · 더블클릭: 원래 크기" }, "⤡");
     ui.lab = $("span", { class: "k-lab" });
-    ui.sel = $("div", { class: "k-ui k-sel" }, [ui.hs, ui.lab]);
+    ui.aw = $("b", { class: "k-aw", title: "한 줄로 늘이기 / 자동 줄바꿈", onpointerdown: e => { e.preventDefault(); e.stopPropagation() }, onclick: e => { e.stopPropagation(); setAutoW(!(offs()[sel.key] || {}).w) } }, "↔");
+    ui.sel = $("div", { class: "k-ui k-sel" }, [ui.hs, ui.lab, ui.aw]);
     ui.gv = $("div", { class: "k-ui k-gv" }); ui.gh = $("div", { class: "k-ui k-gh" });
     ui.grid = $("div", { class: "k-ui k-grid" }, Array.from({ length: 12 }, () => $("i")));
     document.body.append(ui.grid, ui.hov, ui.sel, ui.gv, ui.gh);
