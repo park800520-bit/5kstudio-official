@@ -201,7 +201,7 @@
     "poster": "media/memorial.jpg"
   },
   "cases": {
-    "heading": "주요 작업",
+    "heading": "WORK",
     "items": [
       {
         "client": "IBK기업은행",
@@ -210,6 +210,14 @@
         "vertical": false,
         "video": "media/ibk.mp4",
         "poster": "media/ibk.jpg"
+      },
+      {
+        "client": "달빛코스메틱",
+        "title": "DALBIT 브랜드 필름",
+        "category": "캠페인",
+        "vertical": false,
+        "video": "media/dalbit.mp4",
+        "poster": "media/dalbit.jpg"
       },
       {
         "client": "셀트리온",

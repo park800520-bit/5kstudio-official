@@ -59,7 +59,7 @@
   // case filters + hover play
   const grid=document.getElementById("grid"),fl=document.getElementById("filters");
   fl.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;fl.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
-    grid.querySelectorAll(".c").forEach(c=>c.classList.toggle("hide",b.dataset.k!=="all"&&c.dataset.cat!==b.dataset.k))});
+    grid.querySelectorAll(".wk-cat").forEach(c=>{c.classList.toggle("hide",b.dataset.k!=="all"&&c.dataset.cat!==b.dataset.k);c.style.animation="none";c.offsetWidth;c.style.animation=""})});
   grid.querySelectorAll(".c").forEach(el=>{const v=el.querySelector("video");if(!v)return;
     el._p=()=>{if(reduce||!v.dataset.src)return;if(!v.src)v.src=v.dataset.src;v.play().then(()=>el.classList.add("playing")).catch(()=>{})};el._s=()=>{v.pause();el.classList.remove("playing")};
     el.addEventListener("mouseenter",el._p);el.addEventListener("mouseleave",el._s)});

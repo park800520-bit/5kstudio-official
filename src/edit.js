@@ -114,7 +114,7 @@
         if (!x._rec) { rec(); x._rec = true;
           if (x._autoW) { x._autoW = false; const b = window.__kblock(x), m = info(b), n = { ...(offs()[m.key] || {}), w: 1 }; look(b, n); setOff(m.key, n) } }
         const k = x.dataset.k, v = x.innerText.replace(/\n$/, "");
-        sets.set(k, v);
+        sets.set(k, v); (x.dataset.also || "").split(",").filter(Boolean).forEach(k2 => sets.set(k2, v));   // 브랜드 이름: 같은 브랜드 작품 모두 변경
         document.querySelectorAll(`x-t[data-k="${k}"]`).forEach(o => { if (o !== x) o.innerText = v });
         if (k === "hero.wordmark") dispatchEvent(new Event("resize"));
         refresh(); if (typeof place === "function") { place(); requestAnimationFrame(place) }
@@ -186,7 +186,7 @@
     });
   }
   function moveCase(art, d) {
-    const vis = [...document.querySelectorAll("#grid article.c")].filter(a => a.style.display !== "none");
+    const vis = [...art.parentElement.querySelectorAll(":scope > article.c")].filter(a => a.style.display !== "none");   // 같은 브랜드 안에서만
     const k = vis.indexOf(art), t = vis[k + d]; if (!t) return;
     rec(); d < 0 ? t.before(art) : t.after(art); moved++; refresh(); art.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }
@@ -209,7 +209,7 @@
           $("div", { class: "v" }, [$("img", { src: posterUrl || "", alt: "" }), $("video", { src: vid.url, muted: "", loop: "", playsinline: "", autoplay: "" })]),
           $("div", { class: "cap mono" }, [$("span", {}, item.client), $("span", {}, item.title)])]);
         art.querySelector("video").muted = true; art.classList.add("playing");
-        document.getElementById("grid").prepend(art); refresh(); close(); toast("새 작품을 맨 앞에 넣었어요. [저장하기]를 눌러야 사이트에 올라가요.");
+        (document.querySelector("#grid .wk-cards") || document.getElementById("grid")).prepend(art); refresh(); close(); toast("새 작품을 맨 앞에 넣었어요. [저장하기]를 눌러야 사이트에 올라가요.");
       } }, "추가");
       md.append($("h3", {}, "작품 추가"), $("p", {}, "주요 작업 맨 앞에 들어가요. 영상은 짧은 웹용 루프(10MB 이하)를 권장해요. 썸네일을 안 고르면 영상에서 자동으로 만들어요."),
         $("label", {}, "클라이언트"), client, $("label", {}, "작품명"), title, $("label", {}, "분류"), cat,
@@ -447,7 +447,7 @@
     const grid = document.getElementById("grid");
     grid.querySelectorAll("article.c .k-tb").forEach(tb => tb.prepend($("button", { class: "k-btn", title: "끌어서 순서 변경", style: "cursor:grab", onpointerdown: e => { e.target.closest("article.c").draggable = true } }, "✥")));
     grid.addEventListener("dragstart", e => { dragArt = e.target.closest && e.target.closest("article.c"); if (!dragArt) return; rec(); e.dataTransfer.effectAllowed = "move"; dragArt.style.opacity = .4 });
-    grid.addEventListener("dragover", e => { if (!dragArt) return; e.preventDefault(); const t = e.target.closest("article.c"); if (!t || t === dragArt) return; const r = t.getBoundingClientRect(); e.clientX < r.left + r.width / 2 ? t.before(dragArt) : t.after(dragArt) });
+    grid.addEventListener("dragover", e => { if (!dragArt) return; e.preventDefault(); const t = e.target.closest("article.c"); if (!t || t === dragArt || t.parentElement !== dragArt.parentElement) return; const r = t.getBoundingClientRect(); e.clientX < r.left + r.width / 2 ? t.before(dragArt) : t.after(dragArt) });
     grid.addEventListener("dragend", () => { if (!dragArt) return; dragArt.style.opacity = ""; dragArt.draggable = false; dragArt = null; moved++; refresh() });
   }
 
@@ -455,7 +455,7 @@
   const hist = [], redo = [], LIMIT = 20; let undoBtn;
   const clone = v => v && typeof v === "object" ? JSON.parse(JSON.stringify(v)) : v;
   const gridEl = () => document.getElementById("grid");
-  const snapshot = () => ({ sets: new Map([...sets].map(([k, v]) => [k, clone(v)])), del: new Set(del), adds: adds.slice(), moved, order: [...gridEl().querySelectorAll("article.c")] });
+  const snapshot = () => ({ sets: new Map([...sets].map(([k, v]) => [k, clone(v)])), del: new Set(del), adds: adds.slice(), moved, order: [...gridEl().querySelectorAll("article.c")].map(a => [a, a.parentElement]) });
   function rec() { hist.push(snapshot()); if (hist.length > LIMIT) hist.shift(); redo.length = 0; refresh() }
   function restore(sn) {
     sets.clear(); sn.sets.forEach((v, k) => sets.set(k, clone(v))); del.clear(); sn.del.forEach(i => del.add(i));
@@ -487,9 +487,10 @@
       if (el.dataset.mi) { const s2 = src(val(el.dataset.mi)); if (el.getAttribute("src") !== s2) el.src = s2 } });
     // 작품
     const g = gridEl();
-    g.querySelectorAll("article.c").forEach(a => { if (!order.includes(a)) a.remove() });
-    order.forEach(a => g.append(a));
-    order.forEach(a => { if (a.dataset.i == null) return; const i = +a.dataset.i;
+    const keep = new Set(order.map(o => o[0]));
+    g.querySelectorAll("article.c").forEach(a => { if (!keep.has(a)) a.remove() });
+    order.forEach(([a, p]) => p.append(a));
+    order.forEach(([a]) => { if (a.dataset.i == null) return; const i = +a.dataset.i;
       a.style.display = del.has(i) ? "none" : "";
       const c = val(`cases.items.${i}.category`), vt = !!val(`cases.items.${i}.vertical`);
       a.dataset.cat = c; if (a._sel) a._sel.value = c; a.classList.toggle("vert", vt); if (a._vert) a._vert.textContent = vt ? "세로형 ✓" : "가로형";

@@ -19,12 +19,29 @@ const blocks = {
   APPROACH_ROWS: C.approach.rows.map((r, i) =>
     `<div class="row" tabindex="0"><span class="n">(${String(i + 1).padStart(2, "0")})</span><h3><span class="t">${T(`approach.rows.${i}.title`, r.title)}</span></h3><span></span><p>${T(`approach.rows.${i}.desc`, r.desc)}</p></div>`).join("\n  "),
   CASE_FILTERS: (() => {
-    const cats = [...new Set(C.cases.items.map(c => c.category))];
-    return [`<button type="button" data-k="all" aria-pressed="true">전체 (${C.cases.items.length})</button>`]
-      .concat(cats.map(k => `<button type="button" data-k="${esc(k)}" aria-pressed="false">${esc(k)} (${C.cases.items.filter(c => c.category === k).length})</button>`)).join("");
+    const items = C.cases.items, cats = [...new Set(items.map(c => c.category))];
+    const btn = (k, label, n, on) => `<button type="button" data-k="${esc(k)}" aria-pressed="${on}">${esc(label)}<sup>${n}</sup></button>`;
+    return [btn("all", "전체", items.length, true)].concat(cats.map(k => btn(k, k, items.filter(c => c.category === k).length, false))).join("");
   })(),
-  CASE_ITEMS: C.cases.items.map((c, i) =>
-    `<article class="c${c.vertical ? " vert" : ""}" data-cat="${esc(c.category)}" data-i="${i}"><div class="v"><img src="${media(c.poster)}" alt="${esc(c.client)} ${esc(c.title)}" loading="lazy" data-mi="cases.items.${i}.poster"><video muted loop playsinline preload="none" data-src="${media(c.video)}" data-mv="cases.items.${i}.video"></video></div><div class="cap mono"><span>${T(`cases.items.${i}.client`, c.client)}</span><span>${T(`cases.items.${i}.title`, c.title)}</span></div></article>`).join("\n    "),
+  CASE_META: (() => { const n = C.cases.items.length, b = new Set(C.cases.items.map(c => c.client.trim())).size;
+    return `<span>${String(n).padStart(2, "0")} Projects</span><span>${String(b).padStart(2, "0")} Brands</span>`; })(),
+  // 카테고리 → 브랜드 → 작품 순서로 묶어서 보여줌 (순서는 목록에 처음 나온 순서)
+  CASE_ITEMS: (() => {
+    const items = C.cases.items.map((c, i) => ({ ...c, i })), cats = [...new Set(items.map(c => c.category))];
+    let no = 0;
+    return cats.map((cat, ci) => {
+      const inCat = items.filter(c => c.category === cat), brands = [...new Set(inCat.map(c => c.client.trim()))];
+      const rows = brands.map(br => {
+        const its = inCat.filter(c => c.client.trim() === br), all = items.filter(c => c.client.trim() === br);
+        const also = all.slice(1).map(c => `cases.items.${c.i}.client`).join(",");
+        const cards = its.map(c => { no++;
+          return `<article class="c${c.vertical ? " vert" : ""}" data-cat="${esc(c.category)}" data-i="${c.i}"><div class="v"><img src="${media(c.poster)}" alt="${esc(c.client)} ${esc(c.title)}" loading="lazy" data-mi="cases.items.${c.i}.poster"><video muted loop playsinline preload="none" data-src="${media(c.video)}" data-mv="cases.items.${c.i}.video"></video><span class="no mono">${String(no).padStart(2, "0")}</span></div><div class="cap"><span class="t">${T(`cases.items.${c.i}.title`, c.title)}</span><span class="k mono">${c.vertical ? "Vertical" : "Film"}</span></div></article>`; }).join("");
+        const units = its.reduce((n, c) => n + (c.vertical ? 3 : 4), 0);
+        return `<div class="wk-brand" style="--span:${Math.min(12, units)};--n:${its.length}"><div class="wk-bh"><h4><x-t data-k="cases.items.${its[0].i}.client" data-also="${also}">${txt(its[0].client)}</x-t></h4><span class="mono">${String(its.length).padStart(2, "0")} ${its.length > 1 ? "Works" : "Work"}</span></div><div class="wk-cards">${cards}</div></div>`;
+      }).join("");
+      return `<div class="wk-cat" data-cat="${esc(cat)}"><div class="wk-ch"><span class="mono">${String(ci + 1).padStart(2, "0")}</span><h3>${esc(cat)}</h3><span class="mono">${inCat.length} works · ${brands.length} brands</span></div><div class="wk-brands">${rows}</div></div>`;
+    }).join("\n    ");
+  })(),
   VISION_POINTS: C.vision.points.map((p, i) => `<p><b>${T(`vision.points.${i}.title`, p.title)}</b> ${T(`vision.points.${i}.body`, p.body)}</p>`).join(""),
   STEP_ITEMS: C.steps.items.map((s, i) =>
     `<div><span class="k">[${i + 1}] · ${T(`steps.items.${i}.phase`, s.phase)}</span><h3>${T(`steps.items.${i}.name`, s.name)}</h3><p>${T(`steps.items.${i}.desc`, s.desc)}</p><span class="o">→ ${T(`steps.items.${i}.output`, s.output)}</span></div>`).join(""),
