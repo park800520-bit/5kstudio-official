@@ -54,6 +54,9 @@ const blocks = {
     const k = it.length; if (k <= 3) return it.map(a => `<div>${a}</div>`).join("");
     return `<div>${it.slice(0, k - 2).join("")}</div><div>${it[k - 2]}</div><div>${it[k - 1]}</div>`; })(),
   REPO: esc(REPO),
+  WEBFONTS: fs.readFileSync(path.join(root, "src/fonts.json"), "utf8").replace(/\s+/g, " "),
+  FONTLINKS: (() => { const F = JSON.parse(fs.readFileSync(path.join(root, "src/fonts.json"), "utf8")), used = new Set(Object.values((C.layout && C.layout.offsets) || {}).filter(o => o.f && o.fs === "web").map(o => o.f));
+    return F.filter(f => used.has(f[0])).map(f => `<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=${f[0].replace(/ /g, "+")}${f[1] ? ":" + f[1] : ""}&display=swap">`).join("\n"); })(),
   OFFSETS: JSON.stringify((C.layout && C.layout.offsets) || {}).replace(/</g, "\\u003c"),
 };
 

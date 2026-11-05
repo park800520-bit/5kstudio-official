@@ -68,7 +68,13 @@
   window.__kblock=x=>{let e=x.parentElement;while(e&&e!==document.body){const d=getComputedStyle(e).display;if(d!=="inline"&&d!=="contents")return e;e=e.parentElement}return x.parentElement};
   window.__kfind=key=>{const m=key.match(/^(.*)@(\d+)$/),all=document.querySelectorAll(`x-t[data-k="${m?m[1]:key}"]`);return all[m?+m[2]:0]};
   window.__koff=(()=>{try{return JSON.parse(document.getElementById("k-off").textContent||"{}")}catch(e){return{}}})();
-  window.__kapply=()=>{const on=matchMedia("(min-width:900px)").matches;for(const k in __koff){const x=__kfind(k);if(!x)continue;const o=__koff[k],b=__kblock(x);
+  // 글자 스타일 (글꼴·굵기·자간·행간·대소문자) — 모든 화면에 적용
+  window.__kwebfonts=(()=>{try{return JSON.parse(document.getElementById("k-fonts").textContent)}catch(e){return[]}})();
+  window.__kfontload=n=>{const f=__kwebfonts.find(x=>x[0]===n);if(!f||document.querySelector(`link[data-font="${n}"]`))return;const l=document.createElement("link");l.rel="stylesheet";l.dataset.font=n;
+    l.href="https://fonts.googleapis.com/css2?family="+n.replace(/ /g,"+")+(f[1]?":"+f[1]:"")+"&display=swap";document.head.appendChild(l);document.fonts&&document.fonts.ready.then(()=>dispatchEvent(new Event("resize")))};
+  window.__ktypo=(b,o)=>{const st=b.style;st.fontFamily=o.f?`"${o.f}",var(--f)`:"";st.fontWeight=o.fw?String(o.fw):"";st.letterSpacing=o.ls!=null?o.ls+"em":"";st.lineHeight=o.lh!=null?String(o.lh):"";st.textTransform=o.tt||"";
+    st.fontVariationSettings=o.fw?"normal":""};
+  window.__kapply=()=>{const on=matchMedia("(min-width:900px)").matches;for(const k in __koff){const x=__kfind(k);if(!x)continue;const o=__koff[k],b=__kblock(x);__ktypo(b,o);
     const z=on&&o.s&&o.s!==1&&!b.closest("#word")&&b.id!=="huge"?o.s:1;b.style.zoom=z!==1?z:"";
     b.style.translate=on&&(o.x||o.y)?`${(o.x||0)/z}vw ${(o.y||0)/z}vw`:"";
     const st=b.style;st.whiteSpace=st.width=st.maxWidth=st.marginLeft=st.marginRight="";

@@ -51,6 +51,20 @@
   .k-hs{right:-13px;bottom:-13px;cursor:nwse-resize}
   .k-aw{position:absolute;left:-2px;top:-30px;pointer-events:auto;cursor:pointer;background:#2962ff;color:#fff;font:600 11px/1 "Pretendard Variable",Pretendard,sans-serif;padding:6px 9px;border-radius:999px;white-space:nowrap;box-shadow:0 2px 8px rgba(0,0,0,.25);user-select:none}
   .k-aw.on{background:#111}
+  .k-tp{position:fixed;right:16px;top:72px;z-index:9500;width:280px;display:none;background:#fff;color:#111;border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.22);padding:14px 14px 12px;font:500 12px/1.4 "Pretendard Variable",Pretendard,sans-serif;max-height:calc(100vh - 170px);overflow:auto}
+  .k-tp .hd{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px solid #eee}
+  .k-tp .hd b{font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.k-tp .hd span{color:#999;font-size:11px;white-space:nowrap}
+  .k-tp .tr{display:flex;align-items:center;gap:8px;margin:8px 0}.k-tp .tr.col{flex-direction:column;align-items:stretch}
+  .k-tp label{width:44px;flex:none;color:#666}
+  .k-tp select{flex:1;min-width:0;border:1px solid #ddd;border-radius:8px;padding:6px 8px;font:inherit;background:#fff}
+  .k-tp input[type=range]{flex:1;min-width:0;accent-color:#2962ff}
+  .k-tp .v{width:84px;flex:none;text-align:right;font-variant-numeric:tabular-nums;color:#333;font-size:11px}
+  .k-tp .x{all:unset;cursor:pointer;color:#999;padding:0 2px}.k-tp .x:hover{color:#111}
+  .k-tp .seg{display:flex;gap:4px;flex-wrap:wrap}.k-tp .seg button{all:unset;cursor:pointer;padding:6px 9px;border:1px solid #ddd;border-radius:999px;font-size:11px}
+  .k-tp .seg button.on{background:#111;color:#fff;border-color:#111}
+  .k-tp .lk{all:unset;cursor:pointer;color:#2962ff;font-size:11px;margin:-2px 0 2px 52px}
+  .k-tp .warn{margin:4px 0 0;color:#c25400;font-size:11px}.k-tp .warn:empty{display:none}
+  .k-tp .rs{all:unset;cursor:pointer;display:block;text-align:center;margin-top:10px;padding:7px;border-radius:8px;background:#f3f3f3;font-size:11px}
   .k-lab{position:absolute;right:16px;bottom:-30px;display:none;background:#2962ff;color:#fff;font:600 11px/1 sans-serif;padding:5px 7px;border-radius:6px}
   .k-gv{top:0;bottom:0;width:0;border-left:1px solid #ff2d8a}.k-gh{left:0;right:0;height:0;border-top:1px solid #ff2d8a}
   .k-grid{inset:0;padding:0 28px;grid-template-columns:repeat(12,1fr);gap:20px;z-index:8000}.k-grid i{background:rgba(255,45,138,.07);border-left:1px solid rgba(255,45,138,.18);border-right:1px solid rgba(255,45,138,.18)}
@@ -312,8 +326,8 @@
   const offs = () => JSON.parse(JSON.stringify(val("layout.offsets") || {}));
   const fitted = b => !!(b.closest("#word") || b.id === "huge");
   const applied = new Set(Object.keys(window.__koff || {}));
-  function setOff(key, o) { applied.add(key); const all = offs(); if (o && (o.x || o.y || o.w || (o.s && o.s !== 1))) all[key] = o; else delete all[key]; sets.set("layout.offsets", all); window.__koff = all; refresh() }
-  function look(b, o) { const z = !fitted(b) && o.s && o.s !== 1 ? o.s : 1; b.style.zoom = z !== 1 ? z : ""; b.style.translate = (o.x || o.y) ? `${(o.x || 0) / z}vw ${(o.y || 0) / z}vw` : "";
+  function setOff(key, o) { applied.add(key); const all = offs(); if (o && (o.x || o.y || o.w || o.f || o.fw || o.tt || o.ls != null || o.lh != null || (o.s && o.s !== 1))) all[key] = o; else delete all[key]; sets.set("layout.offsets", all); window.__koff = all; refresh() }
+  function look(b, o) { typo(b, o); const z = !fitted(b) && o.s && o.s !== 1 ? o.s : 1; b.style.zoom = z !== 1 ? z : ""; b.style.translate = (o.x || o.y) ? `${(o.x || 0) / z}vw ${(o.y || 0) / z}vw` : "";
     // 자동 너비: 글자가 길어지면 줄바꿈 없이 옆으로 늘어남 (줄은 Enter로만 바뀜)
     const st = b.style; st.whiteSpace = st.width = st.maxWidth = st.marginLeft = st.marginRight = "";
     if (o.w && !fitted(b)) { const ta = getComputedStyle(b).textAlign; st.whiteSpace = "nowrap"; st.width = "max-content"; st.maxWidth = "none";
@@ -341,7 +355,7 @@
     toast(on ? "한 줄로 늘이기: 글자가 길어지면 옆으로 늘어나요 (줄바꿈은 Enter)" : "자동 줄바꿈: 칸 너비에 맞춰 아래 줄로 넘어가요");
   }
   function indexBlocks() { blocks = new Map(); document.querySelectorAll("x-t[data-k]").forEach(x => { if (x.closest(".now,#grid")) return; const b = window.__kblock(x); if (!blocks.has(b)) blocks.set(b, x) }); if (sel && !sel.b.isConnected) sel = null }
-  const isUI = t => !t || !t.closest || !!t.closest(".k-bar,.k-ov,.k-tb,.k-ui");
+  const isUI = t => !t || !t.closest || !!t.closest(".k-bar,.k-ov,.k-tb,.k-ui,.k-tp");
   function blockAt(t) { if (isUI(t)) return null; for (let e = t; e && e !== document.body; e = e.parentElement) if (blocks.has(e)) return e; return null }
   const info = b => ({ b, key: keyOf(b.querySelector("x-t[data-k]") || blocks.get(b)) });
   function pickB(e) {
@@ -352,6 +366,7 @@
   const fit = (el, r, p = 4) => Object.assign(el.style, { display: "block", left: r.left - p + "px", top: r.top - p + "px", width: r.width + p * 2 + "px", height: r.height + p * 2 + "px" });
   function place() {
     if (!ui.sel) return;
+    tpSync();
     if (!sel || !sel.b.isConnected) { ui.sel.style.display = "none"; return }
     const r = sel.b.getBoundingClientRect(); fit(ui.sel, r); ui.sel.classList.toggle("ed", !!editing);
     ui.hs.style.display = fitted(sel.b) || editing ? "none" : "";
@@ -381,6 +396,77 @@
   function guides(gx, gy) { ui.gv.style.display = gx == null ? "none" : "block"; ui.gv.style.left = gx + "px"; ui.gh.style.display = gy == null ? "none" : "block"; ui.gh.style.top = gy + "px" }
   function toggleGrid(on) { ui.grid.style.display = on ? "grid" : "none"; ui.gridBtn.classList.toggle("o", on) }
 
+  /* ---------- 글자 스타일: 글꼴 · 굵기 · 자간 · 행간 · 대소문자 ---------- */
+  const typo = (b, o) => window.__ktypo ? window.__ktypo(b, o) : null;
+  const MAC_FONTS = ["Apple SD Gothic Neo", "AppleMyungjo", "AppleGothic", "Helvetica Neue", "Helvetica", "Avenir Next", "Avenir", "Futura", "Gill Sans", "Optima", "Didot", "Bodoni 72", "Baskerville", "Big Caslon", "Hoefler Text", "Georgia", "Times New Roman", "American Typewriter", "Copperplate", "Rockwell", "Arial Black", "Impact", "Menlo", "Courier New", "Snell Roundhand", "Noteworthy"];
+  let macFonts = MAC_FONTS.slice(), tp = {};
+  const loadWeb = name => window.__kfontload && window.__kfontload(name);
+  const tpOff = () => sel ? (offs()[sel.key] || {}) : {};
+  function tpSet(patch, el) {
+    if (!sel) return; if (el ? !el._r : true) { rec(); if (el) el._r = true }
+    const n = { ...tpOff(), ...patch }; Object.keys(n).forEach(k => (n[k] == null || n[k] === "") && delete n[k]);
+    if (n.f && n.fs === "web") loadWeb(n.f);
+    look(sel.b, n); setOff(sel.key, n); if (fitted(sel.b)) dispatchEvent(new Event("resize")); place();
+    setTimeout(place, 150);
+  }
+  function fontOptions() {
+    const web = (window.__kwebfonts || []).map(f => f[0]);
+    tp.font.innerHTML = "";
+    tp.font.append($("option", { value: "" }, "기본 (Pretendard)"),
+      $("optgroup", { label: "웹 폰트 — 모든 기기에서 똑같이 보임" }, web.map(n => $("option", { value: "web|" + n }, n))),
+      $("optgroup", { label: "맥 폰트 — 이 맥에서만 보임 (다른 기기는 기본 글꼴)" }, macFonts.map(n => $("option", { value: "mac|" + n }, n))));
+  }
+  async function loadMacFonts() {
+    if (!window.queryLocalFonts) return toast("이 브라우저는 맥 폰트 목록을 읽을 수 없어요. Chrome에서 열어 주세요.");
+    try { const list = await window.queryLocalFonts(); const fams = [...new Set(list.map(f => f.family))].sort((a, b) => a.localeCompare(b, "ko"));
+      macFonts = fams; const cur = tp.font.value; fontOptions(); tp.font.value = cur; toast(`맥 폰트 ${fams.length}개를 불러왔어요`) }
+    catch (e) { toast("맥 폰트 접근이 허용되지 않았어요. 주소창 왼쪽 아이콘에서 '글꼴' 권한을 허용해 주세요.") }
+  }
+  function slider(label, min, max, step, key, fmt) {
+    const r = $("input", { type: "range", min, max, step }), out = $("span", { class: "v" });
+    const go = () => { out.textContent = fmt(+r.value); tpSet({ [key]: +r.value }, r) };
+    r.addEventListener("pointerdown", () => r._r = false); r.addEventListener("focus", () => r._r = false); r.addEventListener("input", go);
+    const reset = $("button", { class: "x", title: "기본값", onclick: () => tpSet({ [key]: null }) }, "↺");
+    tp[key] = { r, out, fmt };
+    return $("div", { class: "tr" }, [$("label", {}, label), r, out, reset]);
+  }
+  function tpBuild() {
+    tp.font = $("select", { onchange: () => { const [src, name] = tp.font.value.split("|"); tpSet(name ? { f: name, fs: src } : { f: null, fs: null }) } });
+    fontOptions();
+    tp.fw = $("select", { onchange: () => tpSet({ fw: tp.fw.value ? +tp.fw.value : null }) },
+      [["", "기본"], [100, "100 Thin"], [200, "200"], [300, "300 Light"], [400, "400 Regular"], [500, "500 Medium"], [600, "600 SemiBold"], [700, "700 Bold"], [800, "800"], [900, "900 Black"]].map(([v, t]) => $("option", { value: v }, t)));
+    tp.warn = $("p", { class: "warn" });
+    const cases = [["", "기본"], ["none", "입력한 그대로"], ["uppercase", "ABC"], ["lowercase", "abc"], ["capitalize", "Abc"]];
+    tp.tt = $("div", { class: "seg" }, cases.map(([v, t]) => $("button", { "data-v": v, title: v === "none" ? "입력한 대문자·소문자를 그대로 보여줘요" : "", onclick: () => tpSet({ tt: v || null }) }, t)));
+    tp.title = $("b");
+    ui.tp = $("div", { class: "k-tp" }, [
+      $("div", { class: "hd" }, [tp.title, $("span", {}, "글자 스타일")]),
+      $("div", { class: "tr" }, [$("label", {}, "글꼴"), tp.font]),
+      $("button", { class: "lk", onclick: loadMacFonts }, "＋ 내 맥 폰트 전부 불러오기"), tp.warn,
+      $("div", { class: "tr" }, [$("label", {}, "굵기"), tp.fw]),
+      slider("자간", -0.12, 0.4, 0.005, "ls", v => (v > 0 ? "+" : "") + v.toFixed(3) + "em"),
+      slider("행간", 0.7, 2.4, 0.02, "lh", v => v.toFixed(2)),
+      $("div", { class: "tr col" }, [$("label", {}, "대소문자"), tp.tt]),
+      $("button", { class: "rs", onclick: () => tpSet({ f: null, fs: null, fw: null, ls: null, lh: null, tt: null }) }, "글자 스타일 모두 초기화")]);
+    document.body.append(ui.tp);
+  }
+  function tpSync() {
+    if (!ui.tp) return;
+    if (!sel || !sel.b.isConnected || act) { ui.tp.style.display = sel && act ? ui.tp.style.display : "none"; return }
+    ui.tp.style.display = "block";
+    const o = tpOff(), cs = getComputedStyle(sel.b);
+    tp.title.textContent = (blocks.get(sel.b) || sel.b).innerText.trim().replace(/\s+/g, " ").slice(0, 18) || sel.key;
+    const v = o.f ? `${o.fs || "web"}|${o.f}` : "";
+    if (v && ![...tp.font.options].some(op => op.value === v)) tp.font.append($("option", { value: v }, o.f));
+    if (document.activeElement !== tp.font) tp.font.value = v;
+    tp.warn.textContent = o.f && o.fs === "mac" ? "⚠ 맥 폰트는 이 맥(과 그 폰트가 깔린 기기)에서만 보여요. 방문자 화면에선 기본 글꼴로 나와요." : "";
+    tp.fw.value = o.fw || "";
+    const fz = parseFloat(cs.fontSize) || 16;
+    const ls = o.ls != null ? o.ls : (parseFloat(cs.letterSpacing) || 0) / fz, lh = o.lh != null ? o.lh : (parseFloat(cs.lineHeight) || fz * 1.2) / fz;
+    [["ls", ls], ["lh", lh]].forEach(([k, val]) => { const t = tp[k]; if (document.activeElement !== t.r) t.r.value = val; t.out.textContent = t.fmt(+val) + (o[k] == null ? " (기본)" : "") });
+    tp.tt.querySelectorAll("button").forEach(bt => bt.classList.toggle("on", (bt.dataset.v || "") === (o.tt || "")));
+  }
+
   function handles() {
     indexBlocks();
     ui.hov = $("div", { class: "k-ui k-hov" });
@@ -389,6 +475,7 @@
     ui.aw = $("b", { class: "k-aw", title: "한 줄로 늘이기 / 자동 줄바꿈", onpointerdown: e => { e.preventDefault(); e.stopPropagation() }, onclick: e => { e.stopPropagation(); setAutoW(!(offs()[sel.key] || {}).w) } }, "↔");
     ui.sel = $("div", { class: "k-ui k-sel" }, [ui.hs, ui.lab, ui.aw]);
     ui.gv = $("div", { class: "k-ui k-gv" }); ui.gh = $("div", { class: "k-ui k-gh" });
+    tpBuild();
     ui.grid = $("div", { class: "k-ui k-grid" }, Array.from({ length: 12 }, () => $("i")));
     document.body.append(ui.grid, ui.hov, ui.sel, ui.gv, ui.gh);
     window.__kstate = () => ({ sel: sel && sel.key, act: !!act, editing: !!editing });
