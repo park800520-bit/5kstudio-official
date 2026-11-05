@@ -56,40 +56,33 @@
     new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)start();else run=false}),{rootMargin:"100px"}).observe(box);
   })();
 
-  // ---------- WORK: 필터 · 보기 방식 · 호버 재생 · 인덱스 · 팝업 ----------
-  const grid=document.getElementById("grid"),fl=document.getElementById("filters"),fmt=document.getElementById("wkfmt"),view=document.getElementById("wkview"),
-    idx=document.getElementById("wkindex"),empty=document.getElementById("wkempty"),peek=document.getElementById("wkpeek"),editing=()=>document.body.classList.contains("k-edit");
-  const cards=()=>[...grid.querySelectorAll("article.c")];
-  let fCat="all",fFmt="all",mode="grid";
+  // ---------- WORK: 필터 · 브랜드 펼치기(아코디언) · 팝업 ----------
+  const grid=document.getElementById("grid"),fl=document.getElementById("filters"),fmt=document.getElementById("wkfmt"),
+    empty=document.getElementById("wkempty"),editing=()=>document.body.classList.contains("k-edit");
+  const cards=()=>[...grid.querySelectorAll("article.c")],rows=[...grid.querySelectorAll(".wk-brand")];
+  let fCat="all",fFmt="all";
   const press=(g,b)=>g.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
-  const visible=()=>cards().filter(c=>!c.classList.contains("hide"));
+  const visible=()=>cards().filter(c=>!c.classList.contains("hide")&&!c.closest(".wk-brand").classList.contains("hide"));
   function apply(){
     cards().forEach(c=>c.classList.toggle("hide",(fCat!=="all"&&c.dataset.cat!==fCat)||(fFmt!=="all"&&c.dataset.fmt!==fFmt)));
-    grid.querySelectorAll(".wk-row").forEach(r=>r.classList.toggle("hide",!r.querySelector("article.c:not(.hide)")));
-    grid.querySelectorAll(".wk-brand").forEach(b=>b.classList.toggle("hide",!b.querySelector("article.c:not(.hide)")));
-    const n=visible().length;empty.hidden=n>0;grid.hidden=mode!=="grid";idx.hidden=mode!=="index";if(mode==="index")buildIndex();
+    rows.forEach(b=>b.classList.toggle("hide",!b.querySelector("article.c:not(.hide)")));
+    empty.hidden=visible().length>0;
   }
   fl.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;press(fl,b);fCat=b.dataset.k;apply()});
   fmt&&fmt.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;press(fmt,b);fFmt=b.dataset.f;apply()});
-  view&&view.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;press(view,b);mode=b.dataset.v;apply()});
-  function buildIndex(){
-    const head=`<div class="wk-ir wk-ih"><span>No.</span><span>Brand</span><span class="t">Title</span><span class="c2">Category</span><span class="f">Format</span><span>Time</span></div>`;
-    idx.innerHTML=head+visible().map((c,i)=>`<div class="wk-ir" data-j="${i}"><span class="n">${String(i+1).padStart(2,"0")}</span><span class="b">${c.dataset.brand}</span><span class="t">${c.dataset.title}</span><span class="m c2">${c.dataset.catl}</span><span class="m f">${c.dataset.ff}</span><span class="m">${c.dataset.dur||""}</span></div>`).join("");
-  }
-  idx.addEventListener("click",e=>{const r=e.target.closest(".wk-ir[data-j]");if(r)openLB(+r.dataset.j)});
-  if(!touch){
-    const pv=peek.querySelector("video");let cur=null;
-    idx.addEventListener("mousemove",e=>{peek.style.left=e.clientX+"px";peek.style.top=e.clientY+"px";const r=e.target.closest(".wk-ir[data-j]");const c=r&&visible()[+r.dataset.j];
-      if(c!==cur){cur=c;if(c){peek.classList.toggle("v",c.dataset.fmt==="v");peek.style.backgroundImage=`url("${c.querySelector("img").src}")`;pv.src=c.querySelector("video").dataset.src;pv.play().catch(()=>{})}}
-      peek.classList.toggle("on",!!c)});
-    idx.addEventListener("mouseleave",()=>{cur=null;peek.classList.remove("on");pv.pause()});
-  }
-  cards().forEach(el=>{const v=el.querySelector("video");if(!v)return;
-    el._p=()=>{if(reduce||!v.dataset.src)return;if(!v.src)v.src=v.dataset.src;v.play().then(()=>el.classList.add("playing")).catch(()=>{})};el._s=()=>{v.pause();el.classList.remove("playing")};
-    el.addEventListener("mouseenter",el._p);el.addEventListener("mouseleave",el._s);
+  // 펼치기: 커서를 올리면 열리고(PC), 누르면 열고 닫음(휴대폰·키보드)
+  function setOpen(row,on){if(row.classList.contains("open")===on)return;row.classList.toggle("open",on);row.querySelector(".wk-bh").setAttribute("aria-expanded",on);
+    row.querySelectorAll("article.c").forEach(el=>{const v=el.querySelector("video");if(!v)return;
+      if(on&&!reduce&&v.dataset.src){if(!v.src)v.src=v.dataset.src;v.play().then(()=>el.classList.add("playing")).catch(()=>{})}else{v.pause();el.classList.remove("playing")}})}
+  let tmr=null;
+  rows.forEach(row=>{const h=row.querySelector(".wk-bh");
+    if(!touch){row.addEventListener("mouseenter",()=>{if(editing())return;clearTimeout(tmr);tmr=setTimeout(()=>{rows.forEach(r=>r!==row&&setOpen(r,false));setOpen(row,true)},90)});
+      row.addEventListener("mouseleave",()=>{if(editing())return;clearTimeout(tmr);setOpen(row,false)})}
+    h.addEventListener("click",e=>{if(editing())return;const on=!row.classList.contains("open");rows.forEach(r=>r!==row&&setOpen(r,false));setOpen(row,on)});
+    h.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&!editing()){e.preventDefault();h.click()}})});
+  cards().forEach(el=>{
     el.addEventListener("click",e=>{if(editing()||e.target.closest(".k-tb"))return;openLB(visible().indexOf(el))});
     el.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&!editing()){e.preventDefault();openLB(visible().indexOf(el))}})});
-  if(touch){const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?e.target._p&&e.target._p():e.target._s&&e.target._s()),{threshold:.6});cards().forEach(c=>io.observe(c))}
   // 팝업 (고화질 영상)
   const lb=document.getElementById("lb"),lv=document.getElementById("lbv"),ld=document.getElementById("lbl");let lbi=0,lbList=[],lastFocus=null;
   function show(i){const c=lbList[(i+lbList.length)%lbList.length];lbi=lbList.indexOf(c);

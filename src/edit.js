@@ -223,7 +223,7 @@
           $("div", { class: "v" }, [$("img", { src: posterUrl || "", alt: "" }), $("video", { src: vid.url, muted: "", loop: "", playsinline: "", autoplay: "" })]),
           $("div", { class: "cap mono" }, [$("span", {}, item.client), $("span", {}, item.title)])]);
         art.querySelector("video").muted = true; art.classList.add("playing");
-        (document.querySelector("#grid .wk-row") || document.getElementById("grid")).prepend(art); refresh(); close(); toast("새 작품을 맨 앞에 넣었어요. [저장하기]를 눌러야 사이트에 올라가요.");
+        (document.querySelector("#grid .wk-strip") || document.getElementById("grid")).prepend(art); refresh(); close(); toast("새 작품을 맨 앞에 넣었어요. [저장하기]를 눌러야 사이트에 올라가요.");
       } }, "추가");
       md.append($("h3", {}, "작품 추가"), $("p", {}, "주요 작업 맨 앞에 들어가요. 영상은 짧은 웹용 루프(10MB 이하)를 권장해요. 썸네일을 안 고르면 영상에서 자동으로 만들어요."),
         $("label", {}, "클라이언트"), client, $("label", {}, "작품명"), title, $("label", {}, "분류"), cat,
