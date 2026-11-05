@@ -37,6 +37,10 @@
       },
       {
         "id": "featured",
+        "hidden": true
+      },
+      {
+        "id": "steps",
         "hidden": false
       },
       {
@@ -45,14 +49,10 @@
       },
       {
         "id": "cta",
-        "hidden": false
+        "hidden": true
       },
       {
         "id": "vision",
-        "hidden": false
-      },
-      {
-        "id": "steps",
         "hidden": false
       },
       {
