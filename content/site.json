@@ -433,8 +433,8 @@
         "dur": 190.5
       },
       {
-        "client": "haru",
-        "title": "뮤직비디오",
+        "client": "오리지널",
+        "title": "haru — 뮤직비디오",
         "category": "필름·뮤직비디오",
         "vertical": false,
         "video": "media/w_haru.mp4",
