@@ -130,12 +130,12 @@
     "pillars": "전략. 인사이트.\n완성도. 납품."
   },
   "cta": {
-    "question": "브리프가 있나요?",
-    "button": "시작"
+    "question": "Got a brief?",
+    "button": "Start"
   },
   "what": {
-    "title_light": "우리가",
-    "title_bold": "하는 일",
+    "title_light": "What",
+    "title_bold": "We Do",
     "intro": "광고가 필요한 모든 순간을 위해 — 전략에서 납품까지, 브랜드를 앞으로 움직이는 캠페인과 콘텐츠를 만듭니다.",
     "game_hint": "잠시 머리를 비우고 점을 클릭해 보세요",
     "columns": [
@@ -423,8 +423,8 @@
         "ratio": 2.333
       },
       {
-        "client": "AI 콘텐츠 페스티벌",
-        "title": "AI 필름",
+        "client": "오리지널",
+        "title": "2026 대한민국 AI 콘텐츠 페스티벌",
         "category": "필름·뮤직비디오",
         "vertical": false,
         "video": "media/w_aifest.mp4",
@@ -466,7 +466,7 @@
     "sub": "Selected Films & Campaigns"
   },
   "vision": {
-    "heading": "핵심 가치",
+    "heading": "Core Values",
     "image": "media/h_shinhan.jpg",
     "lede": "광고를 아는 디렉터가, AI로 만듭니다. 우리는 툴이 아니라 관점으로 일합니다.",
     "points": [
