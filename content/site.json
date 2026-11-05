@@ -2,7 +2,7 @@
   "meta": {
     "title": "5K.STUDIO — AI 네이티브 크리에이티브 프로덕션",
     "description": "전략에서 출발해 AI로 완성하는 엔드투엔드 광고·콘텐츠 프로덕션. 브리프에서 온에어까지 한 팀이 책임집니다.",
-    "email": "contact@5k.studio"
+    "email": "park800520@gmail.com"
   },
   "nav": {
     "logo": "5K.STUDIO",
@@ -86,6 +86,13 @@
       },
       "steps.intro": {
         "w": 1
+      },
+      "meta.email@1": {
+        "tt": "lowercase",
+        "w": 1
+      },
+      "meta.email": {
+        "tt": "lowercase"
       }
     }
   },
