@@ -56,14 +56,54 @@
     new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting)start();else run=false}),{rootMargin:"100px"}).observe(box);
   })();
 
-  // case filters + hover play
-  const grid=document.getElementById("grid"),fl=document.getElementById("filters");
-  fl.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;fl.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
-    grid.querySelectorAll(".wk-cat").forEach(c=>{c.classList.toggle("hide",b.dataset.k!=="all"&&c.dataset.cat!==b.dataset.k);c.style.animation="none";c.offsetWidth;c.style.animation=""})});
-  grid.querySelectorAll(".c").forEach(el=>{const v=el.querySelector("video");if(!v)return;
+  // ---------- WORK: 필터 · 보기 방식 · 호버 재생 · 인덱스 · 팝업 ----------
+  const grid=document.getElementById("grid"),fl=document.getElementById("filters"),fmt=document.getElementById("wkfmt"),view=document.getElementById("wkview"),
+    idx=document.getElementById("wkindex"),empty=document.getElementById("wkempty"),peek=document.getElementById("wkpeek"),editing=()=>document.body.classList.contains("k-edit");
+  const cards=()=>[...grid.querySelectorAll("article.c")];
+  let fCat="all",fFmt="all",mode="grid";
+  const press=(g,b)=>g.querySelectorAll("button").forEach(x=>x.setAttribute("aria-pressed",x===b));
+  const visible=()=>cards().filter(c=>!c.classList.contains("hide"));
+  function apply(){
+    cards().forEach(c=>c.classList.toggle("hide",(fCat!=="all"&&c.dataset.cat!==fCat)||(fFmt!=="all"&&c.dataset.fmt!==fFmt)));
+    grid.querySelectorAll(".wk-row").forEach(r=>r.classList.toggle("hide",!r.querySelector("article.c:not(.hide)")));
+    grid.querySelectorAll(".wk-brand").forEach(b=>b.classList.toggle("hide",!b.querySelector("article.c:not(.hide)")));
+    const n=visible().length;empty.hidden=n>0;grid.hidden=mode!=="grid";idx.hidden=mode!=="index";if(mode==="index")buildIndex();
+  }
+  fl.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;press(fl,b);fCat=b.dataset.k;apply()});
+  fmt&&fmt.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;press(fmt,b);fFmt=b.dataset.f;apply()});
+  view&&view.addEventListener("click",e=>{const b=e.target.closest("button");if(!b)return;press(view,b);mode=b.dataset.v;apply()});
+  function buildIndex(){
+    const head=`<div class="wk-ir wk-ih"><span>No.</span><span>Brand</span><span class="t">Title</span><span class="c2">Category</span><span class="f">Format</span><span>Time</span></div>`;
+    idx.innerHTML=head+visible().map((c,i)=>`<div class="wk-ir" data-j="${i}"><span class="n">${String(i+1).padStart(2,"0")}</span><span class="b">${c.dataset.brand}</span><span class="t">${c.dataset.title}</span><span class="m c2">${c.dataset.catl}</span><span class="m f">${c.dataset.ff}</span><span class="m">${c.dataset.dur||""}</span></div>`).join("");
+  }
+  idx.addEventListener("click",e=>{const r=e.target.closest(".wk-ir[data-j]");if(r)openLB(+r.dataset.j)});
+  if(!touch){
+    const pv=peek.querySelector("video");let cur=null;
+    idx.addEventListener("mousemove",e=>{peek.style.left=e.clientX+"px";peek.style.top=e.clientY+"px";const r=e.target.closest(".wk-ir[data-j]");const c=r&&visible()[+r.dataset.j];
+      if(c!==cur){cur=c;if(c){peek.classList.toggle("v",c.dataset.fmt==="v");peek.style.backgroundImage=`url("${c.querySelector("img").src}")`;pv.src=c.querySelector("video").dataset.src;pv.play().catch(()=>{})}}
+      peek.classList.toggle("on",!!c)});
+    idx.addEventListener("mouseleave",()=>{cur=null;peek.classList.remove("on");pv.pause()});
+  }
+  cards().forEach(el=>{const v=el.querySelector("video");if(!v)return;
     el._p=()=>{if(reduce||!v.dataset.src)return;if(!v.src)v.src=v.dataset.src;v.play().then(()=>el.classList.add("playing")).catch(()=>{})};el._s=()=>{v.pause();el.classList.remove("playing")};
-    el.addEventListener("mouseenter",el._p);el.addEventListener("mouseleave",el._s)});
-  if(touch){const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?e.target._p&&e.target._p():e.target._s&&e.target._s()),{threshold:.6});grid.querySelectorAll(".c").forEach(c=>io.observe(c))}
+    el.addEventListener("mouseenter",el._p);el.addEventListener("mouseleave",el._s);
+    el.addEventListener("click",e=>{if(editing()||e.target.closest(".k-tb"))return;openLB(visible().indexOf(el))});
+    el.addEventListener("keydown",e=>{if((e.key==="Enter"||e.key===" ")&&!editing()){e.preventDefault();openLB(visible().indexOf(el))}})});
+  if(touch){const io=new IntersectionObserver(es=>es.forEach(e=>e.isIntersecting?e.target._p&&e.target._p():e.target._s&&e.target._s()),{threshold:.6});cards().forEach(c=>io.observe(c))}
+  // 팝업 (고화질 영상)
+  const lb=document.getElementById("lb"),lv=document.getElementById("lbv"),ld=document.getElementById("lbl");let lbi=0,lbList=[],lastFocus=null;
+  function show(i){const c=lbList[(i+lbList.length)%lbList.length];lbi=lbList.indexOf(c);
+    document.getElementById("lbn").textContent=`${String(lbi+1).padStart(2,"0")} / ${String(lbList.length).padStart(2,"0")}`;
+    document.getElementById("lbb").textContent=c.dataset.brand;document.getElementById("lbt").textContent=c.dataset.title;
+    document.getElementById("lbm").textContent=[c.dataset.catl,c.dataset.ff,c.dataset.dur].filter(Boolean).join(" · ");
+    ld.hidden=false;lv.poster=c.querySelector("img").src;lv.src=c.dataset.full;lv.play().catch(()=>{});}
+  lv.addEventListener("playing",()=>ld.hidden=true);lv.addEventListener("loadeddata",()=>ld.hidden=true);
+  function openLB(i){if(i<0)return;lbList=visible();lastFocus=document.activeElement;lb.hidden=false;document.documentElement.style.overflow="hidden";requestAnimationFrame(()=>lb.classList.add("on"));show(i);document.getElementById("lbx").focus()}
+  function closeLB(){lv.pause();lv.removeAttribute("src");lv.load();lb.classList.remove("on");document.documentElement.style.overflow="";setTimeout(()=>lb.hidden=true,300);lastFocus&&lastFocus.focus&&lastFocus.focus()}
+  document.getElementById("lbx").onclick=closeLB;document.getElementById("lbp").onclick=()=>show(lbi-1);document.getElementById("lbnx").onclick=()=>show(lbi+1);
+  lb.addEventListener("click",e=>{if(e.target===lb||e.target.id==="lbs")closeLB()});
+  addEventListener("keydown",e=>{if(lb.hidden)return;if(e.key==="Escape")closeLB();else if(e.key==="ArrowRight")show(lbi+1);else if(e.key==="ArrowLeft")show(lbi-1)});
+  let tx=null;lb.addEventListener("touchstart",e=>tx=e.touches[0].clientX,{passive:true});lb.addEventListener("touchend",e=>{if(tx==null)return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>60)show(lbi+(d<0?1:-1));tx=null});
   // text-block offsets (set with the mouse in edit mode) — PC only, phones keep the original layout
   window.__kblock=x=>{let e=x.parentElement;while(e&&e!==document.body){const d=getComputedStyle(e).display;if(d!=="inline"&&d!=="contents")return e;e=e.parentElement}return x.parentElement};
   window.__kfind=key=>{const m=key.match(/^(.*)@(\d+)$/),all=document.querySelectorAll(`x-t[data-k="${m?m[1]:key}"]`);return all[m?+m[2]:0]};

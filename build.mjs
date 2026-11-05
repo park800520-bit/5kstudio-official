@@ -18,28 +18,35 @@ const blocks = {
     `<ul>${col.items.map((it, j) => `<li>${j === 0 ? `<b>${String(i + 1).padStart(2, "0")}</b> ` : ""}${T(`what.columns.${i}.items.${j}`, it)}</li>`).join("")}</ul>`).join(""),
   APPROACH_ROWS: C.approach.rows.map((r, i) =>
     `<div class="row" tabindex="0"><span class="n">(${String(i + 1).padStart(2, "0")})</span><h3><span class="t">${T(`approach.rows.${i}.title`, r.title)}</span></h3><span></span><p>${T(`approach.rows.${i}.desc`, r.desc)}</p></div>`).join("\n  "),
+  // ---------- WORK: 브랜드 > 가로(16:9)·세로(9:16) ----------
   CASE_FILTERS: (() => {
     const items = C.cases.items, cats = [...new Set(items.map(c => c.category))];
     const btn = (k, label, n, on) => `<button type="button" data-k="${esc(k)}" aria-pressed="${on}">${esc(label)}<sup>${n}</sup></button>`;
     return [btn("all", "전체", items.length, true)].concat(cats.map(k => btn(k, k, items.filter(c => c.category === k).length, false))).join("");
   })(),
-  CASE_META: (() => { const n = C.cases.items.length, b = new Set(C.cases.items.map(c => c.client.trim())).size;
-    return `<span>${String(n).padStart(2, "0")} Projects</span><span>${String(b).padStart(2, "0")} Brands</span>`; })(),
-  // 카테고리 → 브랜드 → 작품 순서로 묶어서 보여줌 (순서는 목록에 처음 나온 순서)
+  CASE_FMT: (() => { const it = C.cases.items, v = it.filter(c => c.vertical).length;
+    return `<button type="button" data-f="all" aria-pressed="true">All</button><button type="button" data-f="h" aria-pressed="false">16:9<sup>${it.length - v}</sup></button><button type="button" data-f="v" aria-pressed="false">9:16<sup>${v}</sup></button>`; })(),
+  CASE_META: (() => { const it = C.cases.items, n = it.length, b = new Set(it.map(c => c.client.trim())).size, v = it.filter(c => c.vertical).length;
+    const d = it.reduce((s, c) => s + (+c.dur || 0), 0), cell = (num, lab) => `<div><b>${num}</b><span class="mono">${lab}</span></div>`;
+    return cell(String(n).padStart(2, "0"), "Films") + cell(String(b).padStart(2, "0"), "Brands") + cell(String(n - v).padStart(2, "0"), "Horizontal 16:9") + cell(String(v).padStart(2, "0"), "Vertical 9:16") + (d ? cell(Math.round(d / 60) + "′", "Total runtime") : ""); })(),
   CASE_ITEMS: (() => {
-    const items = C.cases.items.map((c, i) => ({ ...c, i })), cats = [...new Set(items.map(c => c.category))];
-    let no = 0;
-    return cats.map((cat, ci) => {
-      const inCat = items.filter(c => c.category === cat), brands = [...new Set(inCat.map(c => c.client.trim()))];
-      const rows = brands.map(br => {
-        const its = inCat.filter(c => c.client.trim() === br), all = items.filter(c => c.client.trim() === br);
-        const also = all.slice(1).map(c => `cases.items.${c.i}.client`).join(",");
-        const cards = its.map(c => { no++;
-          return `<article class="c${c.vertical ? " vert" : ""}" data-cat="${esc(c.category)}" data-i="${c.i}"><div class="v"><img src="${media(c.poster)}" alt="${esc(c.client)} ${esc(c.title)}" loading="lazy" data-mi="cases.items.${c.i}.poster"><video muted loop playsinline preload="none" data-src="${media(c.video)}" data-mv="cases.items.${c.i}.video"></video><span class="no mono">${String(no).padStart(2, "0")}</span></div><div class="cap"><span class="t">${T(`cases.items.${c.i}.title`, c.title)}</span><span class="k mono">${c.vertical ? "Vertical" : "Film"}</span></div></article>`; }).join("");
-        const units = its.reduce((n, c) => n + (c.vertical ? 3 : 4), 0);
-        return `<div class="wk-brand" style="--span:${Math.min(12, units)};--n:${its.length}"><div class="wk-bh"><h4><x-t data-k="cases.items.${its[0].i}.client" data-also="${also}">${txt(its[0].client)}</x-t></h4><span class="mono">${String(its.length).padStart(2, "0")} ${its.length > 1 ? "Works" : "Work"}</span></div><div class="wk-cards">${cards}</div></div>`;
-      }).join("");
-      return `<div class="wk-cat" data-cat="${esc(cat)}"><div class="wk-ch"><span class="mono">${String(ci + 1).padStart(2, "0")}</span><h3>${esc(cat)}</h3><span class="mono">${inCat.length} works · ${brands.length} brands</span></div><div class="wk-brands">${rows}</div></div>`;
+    const EN = { "캠페인": "Campaign", "숏폼": "Short-form", "필름·뮤직비디오": "Film & MV", "옥외·미디어아트": "OOH & Media Art" };
+    const mmss = s => s ? `${Math.floor(s / 60)}:${String(Math.round(s % 60)).padStart(2, "0")}` : "";
+    const items = C.cases.items.map((c, i) => ({ ...c, i })), brands = [...new Set(items.map(c => c.client.trim()))];
+    const card = c => { const r = +c.ratio || (c.vertical ? 9 / 16 : 16 / 9), wide = !c.vertical && r > 2.05, fmt = c.vertical ? "9:16" : (wide ? r.toFixed(2).replace(/0$/, "") + ":1" : "16:9");
+      return `<article class="c${c.vertical ? " vert" : ""}${wide ? " wide" : ""}" data-i="${c.i}" data-cat="${esc(c.category)}" data-fmt="${c.vertical ? "v" : "h"}" data-full="${media(c.full || c.video)}" data-brand="${esc(c.client.trim())}" data-title="${esc(c.title)}" data-catl="${esc(EN[c.category] || c.category)}" data-ff="${fmt}" data-dur="${mmss(+c.dur)}" tabindex="0">`
+        + `<div class="v" style="aspect-ratio:${c.vertical ? "9/16" : wide ? r.toFixed(3) : "16/9"}"><img src="${media(c.poster)}" alt="${esc(c.client)} — ${esc(c.title)}" loading="lazy" data-mi="cases.items.${c.i}.poster"><video muted loop playsinline preload="none" data-src="${media(c.video)}" data-mv="cases.items.${c.i}.video"></video>`
+        + `<span class="pl" aria-hidden="true"><i></i>Play</span><span class="fm mono">${fmt}${c.dur ? " · " + mmss(+c.dur) : ""}</span></div>`
+        + `<div class="cap"><span class="t">${T(`cases.items.${c.i}.title`, c.title)}</span><span class="k mono">${esc(EN[c.category] || c.category)}</span></div></article>`; };
+    return brands.map((br, bi) => {
+      const all = items.filter(c => c.client.trim() === br), H = all.filter(c => !c.vertical), V = all.filter(c => c.vertical);
+      const cats = [...new Set(all.map(c => EN[c.category] || c.category))];
+      const also = all.slice(1).map(c => `cases.items.${c.i}.client`).join(",");
+      const count = [H.length && `${H.length} Horizontal`, V.length && `${V.length} Vertical`].filter(Boolean).join(" · ");
+      return `<div class="wk-brand" data-cats="${esc(all.map(c => c.category).join("|"))}"><header class="wk-bh"><span class="no mono">${String(bi + 1).padStart(2, "0")}</span>`
+        + `<h3><x-t data-k="cases.items.${all[0].i}.client" data-also="${also}">${txt(all[0].client)}</x-t></h3>`
+        + `<p class="ct mono">${all.length} ${all.length > 1 ? "Films" : "Film"} — ${count}</p><ul class="tg mono">${cats.map(x => `<li>${esc(x)}</li>`).join("")}</ul></header>`
+        + `<div class="wk-media">${H.length ? `<div class="wk-row h n${H.length}">${H.map(card).join("")}</div>` : ""}${V.length ? `<div class="wk-row v">${V.map(card).join("")}</div>` : ""}</div></div>`;
     }).join("\n    ");
   })(),
   VISION_POINTS: C.vision.points.map((p, i) => `<p><b>${T(`vision.points.${i}.title`, p.title)}</b> ${T(`vision.points.${i}.body`, p.body)}</p>`).join(""),

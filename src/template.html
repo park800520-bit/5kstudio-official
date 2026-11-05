@@ -60,9 +60,19 @@
 </section>
 
 <section class="cases g" id="cases" data-sec="cases">
-  <div class="wk-head"><h2 class="wk-title">{{cases.heading}}</h2><p class="wk-meta mono"><!--CASE_META--></p></div>
-  <div class="filters" id="filters" role="group" aria-label="분류"><!--CASE_FILTERS--></div>
+  <div class="wk-top">
+    <p class="wk-eye mono">{{cases.sub}}</p>
+    <h2 class="wk-title">{{cases.heading}}</h2>
+    <div class="wk-stats"><!--CASE_META--></div>
+  </div>
+  <div class="wk-bar">
+    <div class="filters" id="filters" role="group" aria-label="분류"><!--CASE_FILTERS--></div>
+    <div class="wk-tools"><div class="seg" id="wkfmt" role="group" aria-label="화면 비율"><!--CASE_FMT--></div>
+      <div class="seg" id="wkview" role="group" aria-label="보기 방식"><button type="button" data-v="grid" aria-pressed="true">Grid</button><button type="button" data-v="index" aria-pressed="false">Index</button></div></div>
+  </div>
   <div class="wk" id="grid"><!--CASE_ITEMS--></div>
+  <div class="wk-index" id="wkindex" hidden></div>
+  <p class="wk-empty mono" id="wkempty" hidden>해당하는 작업이 없어요</p>
 </section>
 
 <section class="state dark g" id="cta" data-sec="cta" style="padding-block:clamp(90px,10vw,140px)">
@@ -100,6 +110,12 @@
 </footer>
 <script type="application/json" id="k-off"><!--OFFSETS--></script>
 <script type="application/json" id="k-fonts"><!--WEBFONTS--></script>
+<div class="lb" id="lb" hidden role="dialog" aria-modal="true" aria-label="영상 보기">
+  <div class="lb-top"><span class="lb-n mono" id="lbn"></span><div class="lb-meta"><b id="lbb"></b><span id="lbt"></span><span class="mono" id="lbm"></span></div><button type="button" class="lb-x" id="lbx" aria-label="닫기"><i></i><i></i></button></div>
+  <div class="lb-stage" id="lbs"><video id="lbv" controls playsinline preload="auto"></video><div class="lb-load mono" id="lbl">Loading</div></div>
+  <button type="button" class="lb-a lb-prev" id="lbp" aria-label="이전">←</button><button type="button" class="lb-a lb-next" id="lbnx" aria-label="다음">→</button>
+</div>
+<div class="wk-peek" id="wkpeek" aria-hidden="true"><video muted loop playsinline></video></div>
 <script src="site.js" defer></script>
 </body>
 </html>

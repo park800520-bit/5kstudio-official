@@ -204,134 +204,260 @@
     "heading": "WORK",
     "items": [
       {
-        "client": "IBK기업은행",
-        "title": "IRP 온에어 캠페인",
-        "category": "캠페인",
-        "vertical": false,
-        "video": "media/ibk.mp4",
-        "poster": "media/ibk.jpg"
-      },
-      {
-        "client": "달빛코스메틱",
-        "title": "DALBIT 브랜드 필름",
-        "category": "캠페인",
-        "vertical": false,
-        "video": "media/dalbit.mp4",
-        "poster": "media/dalbit.jpg"
-      },
-      {
-        "client": "셀트리온",
-        "title": "화잘먹",
-        "category": "숏폼",
-        "vertical": true,
-        "video": "media/celltrion.mp4",
-        "poster": "media/celltrion.jpg"
-      },
-      {
         "client": "미래에셋증권",
         "title": "브랜드 메인 필름",
         "category": "캠페인",
         "vertical": false,
-        "video": "media/mirae.mp4",
-        "poster": "media/mirae.jpg"
+        "video": "media/w_mirae.mp4",
+        "poster": "media/w_mirae.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/mirae.mp4",
+        "dur": 29.1
       },
       {
-        "client": "AI 콘텐츠 페스티벌",
-        "title": "AI 필름",
-        "category": "필름·뮤직비디오",
+        "client": "미래에셋증권",
+        "title": "연금자산편",
+        "category": "캠페인",
         "vertical": false,
-        "video": "media/aifest.mp4",
-        "poster": "media/aifest.jpg"
+        "video": "media/w_mirae_pension.mp4",
+        "poster": "media/w_mirae_pension.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/mirae_pension.mp4",
+        "dur": 12
+      },
+      {
+        "client": "미래에셋증권",
+        "title": "ISA편",
+        "category": "캠페인",
+        "vertical": false,
+        "video": "media/w_mirae_isa.mp4",
+        "poster": "media/w_mirae_isa.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/mirae_isa.mp4",
+        "dur": 12
       },
       {
         "client": "신한투자증권",
         "title": "브랜딩 필름",
         "category": "캠페인",
         "vertical": false,
-        "video": "media/shinhan.mp4",
-        "poster": "media/shinhan.jpg"
+        "video": "media/w_shinhan.mp4",
+        "poster": "media/w_shinhan.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/shinhan.mp4",
+        "dur": 48
       },
       {
         "client": "신한투자증권",
         "title": "쇼츠 '택시'",
         "category": "숏폼",
         "vertical": true,
-        "video": "media/shinhan_s.mp4",
-        "poster": "media/shinhan_s.jpg"
+        "video": "media/w_shinhan_taxi.mp4",
+        "poster": "media/w_shinhan_taxi.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/shinhan_taxi.mp4",
+        "dur": 20
+      },
+      {
+        "client": "신한투자증권",
+        "title": "쇼츠 '글로벌'",
+        "category": "숏폼",
+        "vertical": true,
+        "video": "media/w_shinhan_global.mp4",
+        "poster": "media/w_shinhan_global.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/shinhan_global.mp4",
+        "dur": 22
+      },
+      {
+        "client": "IBK기업은행",
+        "title": "IRP 온에어 캠페인",
+        "category": "캠페인",
+        "vertical": false,
+        "video": "media/w_ibk.mp4",
+        "poster": "media/w_ibk.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/ibk.mp4",
+        "dur": 30
+      },
+      {
+        "client": "IBK기업은행",
+        "title": "IRP 6초 범퍼 A",
+        "category": "숏폼",
+        "vertical": true,
+        "video": "media/w_ibk_6a.mp4",
+        "poster": "media/w_ibk_6a.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/ibk_6a.mp4",
+        "dur": 6
+      },
+      {
+        "client": "IBK기업은행",
+        "title": "IRP 6초 범퍼 B",
+        "category": "숏폼",
+        "vertical": true,
+        "video": "media/w_ibk_6b.mp4",
+        "poster": "media/w_ibk_6b.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/ibk_6b.mp4",
+        "dur": 6
+      },
+      {
+        "client": "IBK기업은행",
+        "title": "IRP 6초 범퍼 C",
+        "category": "숏폼",
+        "vertical": true,
+        "video": "media/w_ibk_6c.mp4",
+        "poster": "media/w_ibk_6c.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/ibk_6c.mp4",
+        "dur": 6
+      },
+      {
+        "client": "달빛코스메틱",
+        "title": "DALBIT 브랜드 필름",
+        "category": "캠페인",
+        "vertical": false,
+        "video": "media/w_dalbit.mp4",
+        "poster": "media/w_dalbit.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/dalbit.mp4",
+        "dur": 25.8
       },
       {
         "client": "우리은행",
-        "title": "우리WON뱅킹",
+        "title": "우리WON뱅킹 이광수편",
         "category": "캠페인",
         "vertical": false,
-        "video": "media/woori.mp4",
-        "poster": "media/woori.jpg"
+        "video": "media/w_woori_lks.mp4",
+        "poster": "media/w_woori_lks.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/woori_lks.mp4",
+        "dur": 21.1
       },
       {
-        "client": "haru",
-        "title": "뮤직비디오",
-        "category": "필름·뮤직비디오",
+        "client": "우리은행",
+        "title": "우리WON뱅킹 이동욱편",
+        "category": "캠페인",
         "vertical": false,
-        "video": "media/haru.mp4",
-        "poster": "media/haru.jpg"
-      },
-      {
-        "client": "페스티벌플러스",
-        "title": "옥외 대형 LED",
-        "category": "옥외·미디어아트",
-        "vertical": false,
-        "video": "media/festival.mp4",
-        "poster": "media/festival.jpg"
+        "video": "media/w_woori_ldw.mp4",
+        "poster": "media/w_woori_ldw.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/woori_ldw.mp4",
+        "dur": 23.1
       },
       {
         "client": "잡코리아·알바몬",
         "title": "통합 캠페인",
         "category": "캠페인",
         "vertical": false,
-        "video": "media/jobkorea.mp4",
-        "poster": "media/jobkorea.jpg"
+        "video": "media/w_jobkorea.mp4",
+        "poster": "media/w_jobkorea.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/jobkorea.mp4",
+        "dur": 54.3
+      },
+      {
+        "client": "셀트리온",
+        "title": "화잘먹",
+        "category": "숏폼",
+        "vertical": true,
+        "video": "media/w_celltrion_hwa.mp4",
+        "poster": "media/w_celltrion_hwa.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/celltrion_hwa.mp4",
+        "dur": 30.2
       },
       {
         "client": "셀트리온",
         "title": "지피덤",
         "category": "숏폼",
         "vertical": true,
-        "video": "media/celltrion2.mp4",
-        "poster": "media/celltrion2.jpg"
+        "video": "media/w_celltrion_gp.mp4",
+        "poster": "media/w_celltrion_gp.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/celltrion_gp.mp4",
+        "dur": 22
+      },
+      {
+        "client": "셀트리온",
+        "title": "위고잇",
+        "category": "숏폼",
+        "vertical": true,
+        "video": "media/w_celltrion_wego.mp4",
+        "poster": "media/w_celltrion_wego.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/celltrion_wego.mp4",
+        "dur": 36.6
       },
       {
         "client": "서울디지털대학교",
         "title": "브랜드 광고",
         "category": "캠페인",
         "vertical": false,
-        "video": "media/sdu.mp4",
-        "poster": "media/sdu.jpg"
+        "video": "media/w_sdu.mp4",
+        "poster": "media/w_sdu.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/sdu.mp4",
+        "dur": 32.4
       },
       {
-        "client": "오리지널",
-        "title": "feel",
-        "category": "필름·뮤직비디오",
+        "client": "페스티벌플러스",
+        "title": "옥외 대형 LED",
+        "category": "옥외·미디어아트",
         "vertical": false,
-        "video": "media/feel.mp4",
-        "poster": "media/feel.jpg"
+        "video": "media/w_festival.mp4",
+        "poster": "media/w_festival.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/festival.mp4",
+        "dur": 30,
+        "ratio": 2.114
       },
       {
-        "client": "오리지널",
-        "title": "my dear",
-        "category": "필름·뮤직비디오",
+        "client": "페스티벌플러스",
+        "title": "옥외 대형 LED — 와이드",
+        "category": "옥외·미디어아트",
         "vertical": false,
-        "video": "media/mydear.mp4",
-        "poster": "media/mydear.jpg"
+        "video": "media/w_festival_wide.mp4",
+        "poster": "media/w_festival_wide.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/festival_wide.mp4",
+        "dur": 30,
+        "ratio": 3.557
       },
       {
         "client": "국립서울현충원",
         "title": "미디어아트 당선작",
         "category": "옥외·미디어아트",
         "vertical": false,
-        "video": "media/memorial.mp4",
-        "poster": "media/memorial.jpg"
+        "video": "media/w_memorial.mp4",
+        "poster": "media/w_memorial.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/memorial.mp4",
+        "dur": 30,
+        "ratio": 2.333
+      },
+      {
+        "client": "AI 콘텐츠 페스티벌",
+        "title": "AI 필름",
+        "category": "필름·뮤직비디오",
+        "vertical": false,
+        "video": "media/w_aifest.mp4",
+        "poster": "media/w_aifest.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/aifest.mp4",
+        "dur": 190.5
+      },
+      {
+        "client": "haru",
+        "title": "뮤직비디오",
+        "category": "필름·뮤직비디오",
+        "vertical": false,
+        "video": "media/w_haru.mp4",
+        "poster": "media/w_haru.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/haru.mp4",
+        "dur": 192.6
+      },
+      {
+        "client": "오리지널",
+        "title": "feel",
+        "category": "필름·뮤직비디오",
+        "vertical": false,
+        "video": "media/w_feel.mp4",
+        "poster": "media/w_feel.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/feel.mp4",
+        "dur": 323.1
+      },
+      {
+        "client": "오리지널",
+        "title": "my dear",
+        "category": "필름·뮤직비디오",
+        "vertical": false,
+        "video": "media/w_mydear.mp4",
+        "poster": "media/w_mydear.jpg",
+        "full": "https://github.com/park800520-bit/5kstudio-official/releases/download/media-v1/mydear.mp4",
+        "dur": 177.1
       }
-    ]
+    ],
+    "sub": "Selected Films & Campaigns"
   },
   "vision": {
     "heading": "핵심 가치",
